@@ -1,6 +1,6 @@
 {
-    "name": "keboola/my-component",
-    "description": "MyComponent description",
+    "name": "keboola/wr-azure-event-hub",
+    "description": "Azure Event Hub Writer",
     "license": "MIT",
     "require": {
         "php": "^7.4",
@@ -17,13 +17,13 @@
     },
     "autoload": {
         "psr-4": {
-            "MyComponent\\": "src/"
+            "Keboola\\AzureEventHubWriter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MyComponent\\Tests\\": "tests/phpunit/",
-            "MyComponent\\FunctionalTests\\": "tests/functional/"
+            "Keboola\\AzureEventHubWriter\\Tests\\": "tests/phpunit/",
+            "Keboola\\AzureEventHubWriter\\FunctionalTests\\": "tests/functional/"
         }
     },
     "scripts": {
