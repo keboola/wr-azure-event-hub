@@ -17,6 +17,7 @@ git clone https://github.com/keboola/wr-azure-event-hub
 cd wr-azure-event-hub
 docker-compose build
 docker-compose run --rm dev composer install --no-scripts
+docker-compose run --rm dev yarn install
 ```
 
 Run the test suite using this command:
