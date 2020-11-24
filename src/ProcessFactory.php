@@ -13,7 +13,7 @@ use React\Promise\Deferred;
 
 class ProcessFactory
 {
-    public const JSON_STREAM_FD = 3;
+    public const MESSAGE_STREAM_FD = 3;
 
     private LoggerInterface $logger;
 
@@ -34,12 +34,12 @@ class ProcessFactory
             1 => array('pipe', 'w'),
             // STDERR
             2 => array('pipe', 'w'),
-            // JSON STREAM (custom)
-            self::JSON_STREAM_FD => array('pipe', 'r'),
+            // MESSAGE STREAM (custom)
+            self::MESSAGE_STREAM_FD => array('pipe', 'r'),
         ];
 
         // Let NodeJs script know which file descriptor should be used to write JSON documents to
-        $env['JSON_STREAM_FD'] = self::JSON_STREAM_FD;
+        $env['MESSAGE_STREAM_FD'] = self::MESSAGE_STREAM_FD;
 
         // Create process and attach it to the event loop
         $process = new Process($cmd, null, $env, $fileDescriptors);

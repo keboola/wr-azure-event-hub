@@ -51,7 +51,7 @@ class ConfigTest extends AbstractTestCase
                 'hub' => $this->getHubNode(),
                 'tableId' => 'in.c-ex-generic-test.data',
                 'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
-                'column' => 'foo'
+                'column' => 'foo',
             ],
             [
                 'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
@@ -82,7 +82,7 @@ class ConfigTest extends AbstractTestCase
             [
                 'hub' => $this->getHubNode(),
                 'tableId' => 'in.c-ex-generic-test.data',
-                'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE
+                'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
             ],
         ];
 
@@ -92,7 +92,7 @@ class ConfigTest extends AbstractTestCase
                 'hub' => $this->getHubNode(),
                 'tableId' => 'in.c-ex-generic-test.data',
                 'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
-                'column' => 'foo'
+                'column' => 'foo',
             ],
         ];
     }

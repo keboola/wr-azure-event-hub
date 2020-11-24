@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\AzureEventHubWriter\Configuration;
 
 use Keboola\AzureEventHubWriter\Exception\InvalidStateException;
+use Keboola\AzureEventHubWriter\Exception\UserException;
 use Keboola\Component\Config\BaseConfig;
 
 class Config extends BaseConfig
@@ -22,6 +23,28 @@ class Config extends BaseConfig
     public function getTableId(): string
     {
         return $this->getValue(['parameters', 'tableId']);
+    }
+
+    public function getTable(): array
+    {
+        $tableId = $this->getTableId();
+        foreach ($this->getInputTables() as $table) {
+            if ($table['source'] === $tableId) {
+                return $table;
+            }
+        }
+
+        throw new UserException(sprintf('Table source = "%s" not found in the input mapping.', $tableId));
+    }
+
+    public function getTableCsvFile(): string
+    {
+        return $this->getTable()['destination'];
+    }
+
+    public function getTableColumns(): string
+    {
+        return $this->getTable()['columns'];
     }
 
     public function getMode(): string

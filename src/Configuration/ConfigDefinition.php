@@ -11,9 +11,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigDefinition extends BaseConfigDefinition
 {
-    // Message content is value of the configured column
+    // Message's body is value of the configured column
     public const MODE_MESSAGE_COLUMN_VALUE = 'column_value';
-    // Message content is JSON encoded CSV row
+    // Message's body is CSV row encoded to JSON
     public const MODE_MESSAGE_ROW_AS_JSON = 'row_as_json';
 
     protected function getParametersDefinition(): ArrayNodeDefinition
@@ -36,9 +36,8 @@ class ConfigDefinition extends BaseConfigDefinition
             ->end()
         ;
 
-        // Validation
+        // Validation mode
         $parametersNode->validate()->always(function ($v) {
-            // Validate mode
             switch ($v['mode']) {
                 case self::MODE_MESSAGE_ROW_AS_JSON:
                     if (!empty($v['column'])) {
