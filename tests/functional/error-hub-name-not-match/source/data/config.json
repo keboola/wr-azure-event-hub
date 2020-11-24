@@ -1,0 +1,9 @@
+{
+  "action": "testConnection",
+  "parameters": {
+    "hub": {
+      "#connectionString": "%env(string:CONNECTION_STRING_BAD_ENTITY_PATH)%",
+      "eventHubName": "bad-hub-name"
+    }
+  }
+}

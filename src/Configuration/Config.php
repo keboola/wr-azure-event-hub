@@ -42,7 +42,7 @@ class Config extends BaseConfig
         return $this->getTable()['destination'];
     }
 
-    public function getTableColumns(): string
+    public function getTableColumns(): array
     {
         return $this->getTable()['columns'];
     }

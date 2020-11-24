@@ -1,6 +1,7 @@
 'use strict';
 
 const { EventHubProducerClient } = require('@azure/event-hubs');
+const { MessagingError } = require('@azure/core-amqp');
 const { Transform } = require('stream');
 const binarySplit = require('binary-split');
 const UserError = require('./UserError.js');
@@ -139,11 +140,36 @@ class Writer {
   }
 
   async createProducerClient() {
-    console.log(`Connecting to the event hub "${this.eventHubName}" ...`);
-    const producer = new EventHubProducerClient(this.connectionString, this.eventHubName);
-    const properties = await producer.getEventHubProperties();
-    console.log(`Connected to the event hub "${properties.name}".`);
-    return producer;
+    try {
+      console.log(`Connecting to the event hub "${this.eventHubName}" ...`);
+      const producer = new EventHubProducerClient(this.connectionString, this.eventHubName);
+      const properties = await producer.getEventHubProperties();
+      console.error(properties);
+      console.log(`Connected to the event hub "${properties.name}".`);
+      return producer;
+    } catch (e) {
+      switch (true) {
+        case e instanceof TypeError && e.message.includes('doesn\'t match with eventHubName:'):
+          throw new UserError(
+            'Connection error: The entity path in connection string doesn\'t match with the configured event hub name.'
+          );
+
+        case e instanceof TypeError && e.message.includes('SharedAccessKey='):
+          // Hide access key from the output
+          throw new UserError('Connection error. Please, check connection string.');
+
+        case e instanceof TypeError:
+          throw new UserError(
+            `Connection error: ${e.message.replace(/\\.\\s*$/, '')}. Please, check connection string.`
+          );
+
+        case e instanceof MessagingError:
+          throw new UserError(e.message);
+
+        default:
+          throw e;
+      }
+    }
   }
 
   logFinalState() {

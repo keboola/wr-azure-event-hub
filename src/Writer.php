@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Keboola\AzureEventHubWriter;
 
 use Throwable;
+use Iterator;
+use Keboola\AzureEventHubWriter\MessageMapper\MessageMapperFactory;
 use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Exception\ApplicationException;
 use Keboola\AzureEventHubWriter\Exception\ProcessException;
@@ -25,19 +27,22 @@ class Writer
 
     private Config $config;
 
+    private MessageMapperFactory $messageMapperFactory;
+
     private LoopInterface  $loop;
 
     private ProcessFactory $processFactory;
 
-    private CsvReader $csvReader;
-
-    private array $header;
-
-    public function __construct(LoggerInterface $logger, string $dataDir, Config $config)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        string $dataDir,
+        Config $config,
+        MessageMapperFactory $messageMapperFactory
+    ) {
         $this->logger = $logger;
         $this->dataDir = $dataDir;
         $this->config = $config;
+        $this->messageMapperFactory = $messageMapperFactory;
         $this->loop = EventLoopFactory::create();
         $this->processFactory = new ProcessFactory($this->logger, $this->loop);
     }
@@ -76,23 +81,29 @@ class Writer
         // Create CSV reader
         $this->logger->info(sprintf('Exporting table "%s" ...', $this->config->getTableId()));
         $csvPath = $this->getCsvPath();
-        $this->csvReader = new CsvReader($csvPath);
+        $csvReader = new CsvReader($csvPath);
 
-        // Get CSV header
-        $header = $this->csvReader->current();
-        if (!$header) {
-            throw new ApplicationException(sprintf('Missing CSV header in "%s".', $csvPath));
-        }
-        $this->header = $header;
-        $this->csvReader->next();
+        // Create mapper
+        $mapper = $this->messageMapperFactory->create($csvReader);
 
         // Register a new NodeJs process to event loop.
         $process = $this->createNodeJsProcess('write.js');
         $messageStream = $process->getMessageStream();
         $messageWriter = new MessageWriter($messageStream);
 
+        // Throw an exception on process failure
+        $process
+            ->getPromise()
+            ->done(null, function (Throwable $e): void {
+                if ($e instanceof ProcessException && $e->getExitCode() === 1) {
+                    throw new UserException('Export failed.', $e->getCode(), $e);
+                } else {
+                    throw new ApplicationException($e->getMessage(), $e->getCode(), $e);
+                }
+            });
+
         // Schedule the first batch
-        $this->futureWriteCsvRows($this->csvReader, $messageWriter);
+        $this->futureWriteCsvRows($mapper->getMessages(), $messageWriter);
 
         // Start event loop
         $this->loop->run();
@@ -105,7 +116,7 @@ class Writer
         ));
     }
 
-    protected function writeCsvRows(CsvReader $csvReader, MessageWriter $messageWriter): void
+    protected function writeCsvRows(Iterator $messages, MessageWriter $messageWriter): void
     {
         if ($messageWriter->isBufferFull()) {
             usleep(5000); // wait 5ms and check again
@@ -113,27 +124,26 @@ class Writer
         }
 
         for ($i = 0; $i < self::CSV_ROWS_BATCH_SIZE && !$messageWriter->isBufferFull(); $i++) {
-            if (!$csvReader->valid()) {
+            if (!$messages->valid()) {
                 // No more rows
                 $messageWriter->finish();
                 return;
             }
 
-            $message = array_combine($this->header, $csvReader->current());
-            $messageWriter->writeMessage($message);
-            $csvReader->next();
+            $messageWriter->writeMessage($messages->current());
+            $messages->next();
         }
     }
 
-    protected function futureWriteCsvRows(CsvReader $csvReader, MessageWriter $messageWriter): void
+    protected function futureWriteCsvRows(Iterator $messages, MessageWriter $messageWriter): void
     {
         // We write CSV lines in batches to the NodeJs file descriptor.
         // After each batch, execution returns to the loop, so that it can process other events.
         // Event loop then call "futureTick" callback.
-        $this->loop->futureTick(function () use ($csvReader, $messageWriter): void {
-            $this->writeCsvRows($csvReader, $messageWriter);
+        $this->loop->futureTick(function () use ($messages, $messageWriter): void {
+            $this->writeCsvRows($messages, $messageWriter);
             if (!$messageWriter->isFinished()) {
-                $this->futureWriteCsvRows($csvReader, $messageWriter);
+                $this->futureWriteCsvRows($messages, $messageWriter);
             }
         });
     }

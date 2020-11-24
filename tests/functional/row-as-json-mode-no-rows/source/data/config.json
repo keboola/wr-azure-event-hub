@@ -11,7 +11,7 @@
   },
   "parameters": {
     "hub": {
-      "#connectionString": "%env(string:CONNECTION_STRING)%",
+      "#connectionString": "%env(string:CONNECTION_STRING_NORMALIZED)%",
       "eventHubName": "%env(string:EVENT_HUB_NAME)%"
     },
     "tableId": "in.c-test.data"
