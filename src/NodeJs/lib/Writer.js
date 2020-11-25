@@ -23,14 +23,16 @@ class Writer {
     this.delimiter = JSON.parse(process.env.MESSAGE_DELIMITER);
     this.connectionString = process.env.CONNECTION_STRING;
     this.eventHubName = process.env.EVENT_HUB_NAME;
-    this.messagesQueuedCount = 0;
-    this.messagesSendingCount = 0;
-    this.messagesSentCount = 0;
-    this.batchesSentCount = 0;
     this.progressTimer = null;
     this.producer = null;
     this.batch = null;
     this.batchSendPromise = null;
+
+    // Stats
+    this.messagesQueuedCount = 0;
+    this.messagesSendingCount = 0;
+    this.messagesSentCount = 0;
+    this.batchesSentCount = 0;
   }
 
   async testConnection() {
@@ -154,7 +156,7 @@ class Writer {
             'Connection error: The entity path in connection string doesn\'t match with the configured event hub name.'
           );
 
-        case e instanceof TypeError && e.message.includes('SharedAccessKey='):
+        case e instanceof TypeError && e.message.includes('AccessKey='):
           // Hide access key from the output
           throw new UserError('Connection error. Please, check connection string.');
 

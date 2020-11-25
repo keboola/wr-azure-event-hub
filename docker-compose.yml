@@ -8,3 +8,4 @@ services:
     environment:
       - CONNECTION_STRING
       - EVENT_HUB_NAME
+      - CONSUMER_GROUP_NAME
