@@ -19,7 +19,7 @@ class MessageWriterTest extends AbstractTestCase
     {
         $output = '';
         $stream = new ThroughStream();
-        $stream->on('data', function (string $data) use (&$output) {
+        $stream->on('data', function (string $data) use (&$output): void {
             $output .= $data;
         });
         $messageWriter = new MessageWriter($stream);
@@ -31,17 +31,17 @@ class MessageWriterTest extends AbstractTestCase
     {
         yield 'string' => [
             'test " string',
-            '"test \" string"' . MessageWriter::DELIMITER
+            '"test \" string"' . MessageWriter::DELIMITER,
         ];
 
         yield 'array' => [
             ['a', 'b', 'c'],
-            '["a","b","c"]' . MessageWriter::DELIMITER
+            '["a","b","c"]' . MessageWriter::DELIMITER,
         ];
 
         yield 'object' => [
             ['a' => 'a1', 'b' => 'b1', 'c' => 'c1'],
-            '{"a":"a1","b":"b1","c":"c1"}' . MessageWriter::DELIMITER
+            '{"a":"a1","b":"b1","c":"c1"}' . MessageWriter::DELIMITER,
         ];
     }
 }

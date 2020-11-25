@@ -22,8 +22,9 @@ class Component extends BaseComponent
     {
         parent::__construct($logger);
         $config = $this->getConfig();
-        $messageMapperFactory = new MessageMapperFactory($config);
-        $this->writer = new Writer($this->getLogger(), $this->getDataDir(), $config, $messageMapperFactory);
+        $dataDir = $this->getDataDir();
+        $messageMapperFactory = new MessageMapperFactory($config, $dataDir);
+        $this->writer = new Writer($this->getLogger(), $dataDir, $config, $messageMapperFactory);
     }
 
     protected function run(): void

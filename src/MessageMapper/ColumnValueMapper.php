@@ -15,19 +15,28 @@ class ColumnValueMapper implements MessageMapper
 
     private string $column;
 
+    private int $columnIndex;
+
+    private array $header;
+
     public function __construct(Config $config, CsvReader $csvReader)
     {
         $this->csvReader = $csvReader;
         $this->column = $config->getColumn();
+        $this->header = (array) $csvReader->getHeader();
 
         // Validate: defined column must be present in the input table
-        if (!in_array($this->column, $config->getTableColumns(), true)) {
+        $columnIndex = array_search($this->column, $this->header);
+        if (!is_int($columnIndex)) {
             throw new UserException(sprintf(
                 'Column "%s" not found in table "%s".',
                 $this->column,
                 $config->getTableId()
             ));
         }
+
+        // Get column index
+        $this->columnIndex = $columnIndex;
 
         // Skip header
         $this->csvReader->next();
@@ -37,7 +46,7 @@ class ColumnValueMapper implements MessageMapper
     {
         while ($this->csvReader->valid()) {
             $row = $this->csvReader->current();
-            yield  $row[$this->column];
+            yield  $row[$this->columnIndex];
             $this->csvReader->next();
         }
     }

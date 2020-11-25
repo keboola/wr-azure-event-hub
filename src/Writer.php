@@ -79,12 +79,14 @@ class Writer
     public function write(): void
     {
         // Create CSV reader
-        $this->logger->info(sprintf('Exporting table "%s" ...', $this->config->getTableId()));
-        $csvPath = $this->getCsvPath();
-        $csvReader = new CsvReader($csvPath);
+        $this->logger->info(sprintf(
+            'Exporting table "%s" in "%s" mode ...',
+            $this->config->getTableId(),
+            $this->config->getMode()
+        ));
 
         // Create mapper
-        $mapper = $this->messageMapperFactory->create($csvReader);
+        $mapper = $this->messageMapperFactory->create();
 
         // Register a new NodeJs process to event loop.
         $process = $this->createNodeJsProcess('write.js');
@@ -146,16 +148,6 @@ class Writer
                 $this->futureWriteCsvRows($messages, $messageWriter);
             }
         });
-    }
-
-    protected function getCsvPath(): string
-    {
-        $csvPath = rtrim($this->dataDir, '/') . '/in/tables/' . $this->config->getTableCsvFile();
-        if (!file_exists($csvPath)) {
-            throw new ApplicationException(sprintf('CSV file "%s" not found.', $csvPath));
-        }
-
-        return $csvPath;
     }
 
     protected function createNodeJsProcess(string $script): ProcessWrapper
