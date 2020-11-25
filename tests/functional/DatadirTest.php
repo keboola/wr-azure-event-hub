@@ -18,7 +18,7 @@ class DatadirTest extends DatadirTestCase
         parent::setUp();
 
         // Remove EntityPath (alias "event hub name") from connection string if preset.
-        // It is optional, and we to test if is bad EntityPath specified.
+        // It is optional, and we want to test if is bad EntityPath specified.
         $connectionString = (string) getenv('CONNECTION_STRING');
         $connectionString = (string) preg_replace('~EntityPath=[^=;]+~', '', $connectionString);
         putenv("CONNECTION_STRING_NORMALIZED={$connectionString}");
