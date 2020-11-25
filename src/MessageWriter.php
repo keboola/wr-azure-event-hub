@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Keboola\AzureEventHubWriter;
 
 use Keboola\AzureEventHubWriter\Exception\ApplicationException;
+use React\Stream\WritableStreamInterface;
 use Throwable;
-use React\Stream\WritableResourceStream;
 
 class MessageWriter
 {
     public const DELIMITER = "\n---\n";
 
-    private WritableResourceStream $messageStream;
+    private WritableStreamInterface $messageStream;
 
     private bool $bufferFull = false;
 
@@ -20,7 +20,7 @@ class MessageWriter
 
     private int $processed = 0;
 
-    public function __construct(WritableResourceStream $messageStream)
+    public function __construct(WritableStreamInterface $messageStream)
     {
         $this->messageStream = $messageStream;
         $this->messageStream->on('error', function (Throwable $e): void {
