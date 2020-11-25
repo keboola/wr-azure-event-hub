@@ -1,10 +1,14 @@
 {
-    "name": "keboola/my-component",
-    "description": "MyComponent description",
+    "name": "keboola/wr-azure-event-hub",
+    "description": "Azure Event Hub Writer",
     "license": "MIT",
     "require": {
         "php": "^7.4",
-        "keboola/php-component": "^8.1"
+        "ext-json": "*",
+        "keboola/php-component": "^8.1",
+        "react/child-process": "^0.6.1",
+        "react/event-loop": "^1.1",
+        "react/promise": "^2.8"
     },
     "require-dev": {
         "php-parallel-lint/php-parallel-lint": "^1.2",
@@ -17,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "MyComponent\\": "src/"
+            "Keboola\\AzureEventHubWriter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MyComponent\\Tests\\": "tests/phpunit/",
-            "MyComponent\\FunctionalTests\\": "tests/functional/"
+            "Keboola\\AzureEventHubWriter\\Tests\\": "tests/phpunit/",
+            "Keboola\\AzureEventHubWriter\\FunctionalTests\\": "tests/functional/"
         }
     },
     "scripts": {
@@ -38,10 +42,13 @@
         "phpcs": "phpcs -n --ignore=vendor --extensions=php .",
         "phpcbf": "phpcbf -n --ignore=vendor --extensions=php .",
         "phplint": "parallel-lint -j 10 --exclude vendor .",
+        "eslint": "./node_modules/.bin/eslint --color src",
+        "eslint-fix": "./node_modules/.bin/eslint --fix --color src",
         "build": [
             "@phplint",
             "@phpcs",
             "@phpstan",
+            "@eslint",
             "@tests"
         ],
         "ci": [

@@ -2,15 +2,50 @@
 
 declare(strict_types=1);
 
-namespace MyComponent;
+namespace Keboola\AzureEventHubWriter;
 
+use Keboola\AzureEventHubWriter\Configuration\ActionConfigDefinition;
+use Keboola\AzureEventHubWriter\Configuration\Config;
+use Keboola\AzureEventHubWriter\Configuration\ConfigDefinition;
 use Keboola\Component\BaseComponent;
+use Psr\Log\LoggerInterface;
 
 class Component extends BaseComponent
 {
+    public const ACTION_RUN = 'run';
+    public const ACTION_TEST_CONNECTION = 'testConnection';
+
+    private Writer $writer;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        parent::__construct($logger);
+        $this->writer = new Writer($this->getLogger(), $this->getDataDir(), $this->getConfig());
+    }
+
     protected function run(): void
     {
-        // @TODO implement
+        $this->writer->write();
+    }
+
+    protected function handleTestConnection(): array
+    {
+        $this->writer->testConnection();
+        return ['success' => true];
+    }
+
+    protected function getSyncActions(): array
+    {
+        return [
+            self::ACTION_TEST_CONNECTION => 'handleTestConnection',
+        ];
+    }
+
+    public function getConfig(): Config
+    {
+        /** @var Config $config */
+        $config = parent::getConfig();
+        return $config;
     }
 
     protected function getConfigClass(): string
@@ -20,6 +55,7 @@ class Component extends BaseComponent
 
     protected function getConfigDefinitionClass(): string
     {
-        return ConfigDefinition::class;
+        $action = $this->getRawConfig()['action'] ?? 'run';
+        return $action === 'run' ? ConfigDefinition::class : ActionConfigDefinition::class;
     }
 }

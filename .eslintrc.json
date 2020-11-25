@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "@keboola/node"
+  ],
+  "plugins": [
+    "import"
+  ],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "no-constant-condition": "off",
+    "no-await-in-loop": "off"
+  }
+}
