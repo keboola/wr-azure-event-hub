@@ -19,8 +19,8 @@ async function main() {
                 for (const event of events) {
                     const number = (messageCount+1).toString().padStart(3, '0');
                     console.log(`Message ${number}, content: ${JSON.stringify(event.body)}`)
+                    messageCount++;
                 }
-                messageCount++;
             },
             processError: async (err, context) => {
                 console.error(`Error on partition "${context.partitionId}": ${err}`);
