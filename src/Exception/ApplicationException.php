@@ -6,7 +6,7 @@ namespace Keboola\AzureEventHubWriter\Exception;
 
 use Keboola\CommonExceptions\ApplicationExceptionInterface;
 
-class ApplicationException extends \Exception implements ApplicationExceptionInterface
+class ApplicationException extends \RuntimeException implements ApplicationExceptionInterface
 {
 
 }

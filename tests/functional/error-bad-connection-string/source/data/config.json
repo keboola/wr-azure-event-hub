@@ -1,0 +1,9 @@
+{
+  "action": "testConnection",
+  "parameters": {
+    "hub": {
+      "#connectionString": "Endpoint=google.com;",
+      "eventHubName": "%env(string:EVENT_HUB_NAME)%"
+    }
+  }
+}

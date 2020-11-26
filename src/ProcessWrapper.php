@@ -54,11 +54,11 @@ class ProcessWrapper
         return $stderr;
     }
 
-    public function getJsonStream(): ReadableResourceStream
+    public function getMessageStream(): WritableResourceStream
     {
         // We use separated file descriptor for JSON documents stream, see ProcessFactory
-        /** @var ReadableResourceStream $jsonStream */
-        $jsonStream = $this->process->pipes[ProcessFactory::JSON_STREAM_FD];
+        /** @var WritableResourceStream $jsonStream */
+        $jsonStream = $this->process->pipes[ProcessFactory::MESSAGE_STREAM_FD];
         return $jsonStream;
     }
 }

@@ -7,9 +7,15 @@ namespace Keboola\AzureEventHubWriter\Configuration;
 use Keboola\AzureEventHubWriter\Configuration\Node\HubNode;
 use Keboola\Component\Config\BaseConfigDefinition;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigDefinition extends BaseConfigDefinition
 {
+    // Message's body is value of the configured column
+    public const MODE_MESSAGE_COLUMN_VALUE = 'column_value';
+    // Message's body is CSV row encoded to JSON
+    public const MODE_MESSAGE_ROW_AS_JSON = 'row_as_json';
+
     protected function getParametersDefinition(): ArrayNodeDefinition
     {
         $parametersNode = parent::getParametersDefinition();
@@ -21,8 +27,39 @@ class ConfigDefinition extends BaseConfigDefinition
             ->ignoreExtraKeys(true)
             ->children()
                 ->append(new HubNode())
+                ->scalarNode('tableId')->isRequired()->cannotBeEmpty()->end()
+                ->enumNode('mode')
+                    ->values([self::MODE_MESSAGE_COLUMN_VALUE, self::MODE_MESSAGE_ROW_AS_JSON])
+                    ->defaultValue(self::MODE_MESSAGE_ROW_AS_JSON)
+                ->end()
+                ->scalarNode('column')->end()
             ->end()
         ;
+
+        // Validation mode
+        $parametersNode->validate()->always(function ($v) {
+            switch ($v['mode']) {
+                case self::MODE_MESSAGE_ROW_AS_JSON:
+                    if (!empty($v['column'])) {
+                        throw new InvalidConfigurationException(sprintf(
+                            'Invalid configuration, "column" is configured, but "mode" is set to "%s".',
+                            self::MODE_MESSAGE_ROW_AS_JSON
+                        ));
+                    }
+                    break;
+                case self::MODE_MESSAGE_COLUMN_VALUE:
+                    if (empty($v['column'])) {
+                        throw new InvalidConfigurationException(sprintf(
+                            'Invalid configuration, missing "column" key, "mode" is set to "%s".',
+                            self::MODE_MESSAGE_COLUMN_VALUE
+                        ));
+                    }
+                    break;
+            }
+
+            return $v;
+        });
+
         // @formatter:on
         return $parametersNode;
     }

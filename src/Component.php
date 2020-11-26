@@ -7,6 +7,7 @@ namespace Keboola\AzureEventHubWriter;
 use Keboola\AzureEventHubWriter\Configuration\ActionConfigDefinition;
 use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Configuration\ConfigDefinition;
+use Keboola\AzureEventHubWriter\MessageMapper\MessageMapperFactory;
 use Keboola\Component\BaseComponent;
 use Psr\Log\LoggerInterface;
 
@@ -20,7 +21,10 @@ class Component extends BaseComponent
     public function __construct(LoggerInterface $logger)
     {
         parent::__construct($logger);
-        $this->writer = new Writer($this->getLogger(), $this->getDataDir(), $this->getConfig());
+        $config = $this->getConfig();
+        $dataDir = $this->getDataDir();
+        $messageMapperFactory = new MessageMapperFactory($config, $dataDir);
+        $this->writer = new Writer($this->getLogger(), $dataDir, $config, $messageMapperFactory);
     }
 
     protected function run(): void

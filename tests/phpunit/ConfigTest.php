@@ -35,10 +35,30 @@ class ConfigTest extends AbstractTestCase
         yield 'minimal' => [
             [
                 'hub' => $this->getHubNode(),
+                'tableId' => 'in.c-ex-generic-test.data',
             ],
             [
                 'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
                 'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => null,
+            ],
+        ];
+
+        yield 'full' => [
+            [
+                'hub' => $this->getHubNode(),
+                'tableId' => 'in.c-ex-generic-test.data',
+                'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
+                'column' => 'foo',
+            ],
+            [
+                'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
+                'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
+                'column' => 'foo',
             ],
         ];
     }
@@ -56,6 +76,25 @@ class ConfigTest extends AbstractTestCase
                 'hub' => [],
             ],
         ];
+
+        yield 'column-missing' => [
+            'Invalid configuration, missing "column" key, "mode" is set to "column_value".',
+            [
+                'hub' => $this->getHubNode(),
+                'tableId' => 'in.c-ex-generic-test.data',
+                'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
+            ],
+        ];
+
+        yield 'column-unexpected' => [
+            'Invalid configuration, "column" is configured, but "mode" is set to "row_as_json".',
+            [
+                'hub' => $this->getHubNode(),
+                'tableId' => 'in.c-ex-generic-test.data',
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => 'foo',
+            ],
+        ];
     }
 
     private function configToArray(Config $config): array
@@ -63,6 +102,9 @@ class ConfigTest extends AbstractTestCase
         return [
             'connectionString' => $config->getConnectionString(),
             'eventHubName' => $config->getEventHubName(),
+            'tableId' => $config->getTableId(),
+            'mode'  => $config->getMode(),
+            'column' => $config->hasColumn() ? $config->getColumn() : null,
         ];
     }
 
