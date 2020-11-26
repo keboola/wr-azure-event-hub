@@ -78,7 +78,6 @@ class Writer {
         loadNext = true;
       } else {
         // Message was not added => batch was full => try again with the new batch
-        console.log(this.batch.count);
         loadNext = false;
       }
 
@@ -146,7 +145,6 @@ class Writer {
       console.log(`Connecting to the event hub "${this.eventHubName}" ...`);
       const producer = new EventHubProducerClient(this.connectionString, this.eventHubName);
       const properties = await producer.getEventHubProperties();
-      console.error(properties);
       console.log(`Connected to the event hub "${properties.name}".`);
       return producer;
     } catch (e) {
