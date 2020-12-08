@@ -7,6 +7,7 @@ namespace Keboola\AzureEventHubWriter\Configuration;
 use Keboola\AzureEventHubWriter\Configuration\Node\HubNode;
 use Keboola\Component\Config\BaseConfigDefinition;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigDefinition extends BaseConfigDefinition
@@ -15,6 +16,31 @@ class ConfigDefinition extends BaseConfigDefinition
     public const MODE_MESSAGE_COLUMN_VALUE = 'column_value';
     // Message's body is CSV row encoded to JSON
     public const MODE_MESSAGE_ROW_AS_JSON = 'row_as_json';
+
+    protected function getRootDefinition(TreeBuilder $treeBuilder): ArrayNodeDefinition
+    {
+        $rootNode = parent::getRootDefinition($treeBuilder);
+
+        // Check/determine tableId
+        $rootNode->validate()->always(function ($v) {
+            $tableId = $v['parameters']['tableId'] ?? null;
+            $inputTables = array_values($v['storage']['input']['tables'] ?? []);
+            if (!$tableId && count($inputTables) === 1) {
+                // Get table (only one present) from the input mapping
+                $v['parameters']['tableId'] = $inputTables[0]['source'];
+            } elseif (!$tableId) {
+                // No table found
+                throw new InvalidConfigurationException(sprintf(
+                    'Please define one table in the input mapping, found %d tables.',
+                    count($inputTables)
+                ));
+            }
+
+            return $v;
+        });
+
+        return $rootNode;
+    }
 
     protected function getParametersDefinition(): ArrayNodeDefinition
     {
@@ -27,7 +53,7 @@ class ConfigDefinition extends BaseConfigDefinition
             ->ignoreExtraKeys(true)
             ->children()
                 ->append(new HubNode())
-                ->scalarNode('tableId')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('tableId')->cannotBeEmpty()->defaultValue(null)->end()
                 ->enumNode('mode')
                     ->values([self::MODE_MESSAGE_COLUMN_VALUE, self::MODE_MESSAGE_ROW_AS_JSON])
                     ->defaultValue(self::MODE_MESSAGE_ROW_AS_JSON)

@@ -10,7 +10,9 @@ The configuration `config.json` contains following properties in `parameters` ke
 - `hub` - object (required): Configuration of the connection.
     - `#connectionString` - string (required): [Event Hubs connection string](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-get-connection-string) eg. `Endpoint=sb://....`.
     - `eventHubName` - string (required): [Event Hubs name](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-create#create-an-event-hub).
-- `tableId` - string (required): Name of the table from the input mapping (source).
+- `tableId` - string (optional):
+  - Name of the table from the input mapping (source).
+  - If the input mapping contains only one table, it is used by default.
 - `mode` - enum (optional): Specifies how the CSV row is mapped to the message.
     - `row_as_json` (default) - Message is row in the JSON format, eg. `{"id": 1, "name": "John"}`.
     - `column_value` - Message is value of the defined `column`, eg. `John`.
