@@ -1,5 +1,0 @@
-Message 001, content: {"id":"1","name":"Erika Harrell","age":"18"}
-Message 002, content: {"id":"2","name":"Nahla Nunez","age":"20"}
-Message 003, content: {"id":"3","name":"Jaeden Escobar","age":"14"}
-Message 004, content: {"id":"4","name":"Zane Craft","age":"13"}
-Message 005, content: {"id":"5","name":"Sebastien Mora","age":"32"}
