@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\AzureEventHubWriter\MessageMapper;
 
 use Iterator;
+use JsonException;
 use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Exception\UserException;
 use Keboola\Csv\CsvReader;
@@ -46,7 +47,15 @@ class ColumnValueMapper implements MessageMapper
     {
         while ($this->csvReader->valid()) {
             $row = $this->csvReader->current();
-            yield  $row[$this->columnIndex];
+            $rawMessage = $row[$this->columnIndex];
+
+            // Try convert to JSON object
+            try {
+                yield json_decode($rawMessage, false, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                yield ['data' => $rawMessage];
+            }
+
             $this->csvReader->next();
         }
     }
