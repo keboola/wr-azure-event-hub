@@ -13,6 +13,10 @@ The configuration `config.json` contains following properties in `parameters` ke
 - `tableId` - string (optional):
   - Name of the table from the input mapping (source).
   - If the input mapping contains only one table, it is used by default.
+- `batchSize` int (optional):
+  - Default `1000`.
+  - Number of messages to be sent at once.
+  - If the messages exceed the maximum batch size, a smaller number can be sent.
 - `mode` - enum (optional): Specifies how the CSV row is mapped to the message.
     - `row_as_json` (default) - Message is row in the JSON format, eg. `{"id": 1, "name": "John"}`.
     - `column_value` - Message is value of the defined `column`, eg. `John`.
