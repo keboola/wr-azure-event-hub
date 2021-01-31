@@ -12,6 +12,8 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class ConfigDefinition extends BaseConfigDefinition
 {
+    public const DEFAULT_BATCH_SITE = 1000;
+
     // Message's body is value of the configured column
     public const MODE_MESSAGE_COLUMN_VALUE = 'column_value';
     // Message's body is CSV row encoded to JSON
@@ -54,6 +56,7 @@ class ConfigDefinition extends BaseConfigDefinition
             ->children()
                 ->append(new HubNode())
                 ->scalarNode('tableId')->cannotBeEmpty()->defaultValue(null)->end()
+                ->integerNode('batchSize')->min(1)->defaultValue(self::DEFAULT_BATCH_SITE)->end()
                 ->enumNode('mode')
                     ->values([self::MODE_MESSAGE_COLUMN_VALUE, self::MODE_MESSAGE_ROW_AS_JSON])
                     ->defaultValue(self::MODE_MESSAGE_ROW_AS_JSON)

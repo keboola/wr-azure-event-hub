@@ -60,4 +60,9 @@ class Config extends BaseConfig
 
         return $this->getValue(['parameters', 'column']);
     }
+
+    public function getBatchSize(): int
+    {
+        return $this->getValue(['parameters', 'batchSize']);
+    }
 }

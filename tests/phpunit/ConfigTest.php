@@ -43,6 +43,25 @@ class ConfigTest extends AbstractTestCase
                 'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
                 'eventHubName' => 'my-event-hub',
                 'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => null,
+            ],
+        ];
+
+        yield 'batch-size' => [
+            [
+                'parameters' => [
+                    'hub' => $this->getHubNode(),
+                    'tableId' => 'in.c-ex-generic-test.data',
+                    'batchSize' => 123,
+                ],
+            ],
+            [
+                'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
+                'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => 123,
                 'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
                 'column' => null,
             ],
@@ -68,6 +87,7 @@ class ConfigTest extends AbstractTestCase
                 'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
                 'eventHubName' => 'my-event-hub',
                 'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
                 'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
                 'column' => null,
             ],
@@ -86,6 +106,7 @@ class ConfigTest extends AbstractTestCase
                 'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
                 'eventHubName' => 'my-event-hub',
                 'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
                 'mode' => ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE,
                 'column' => 'foo',
             ],
@@ -172,6 +193,7 @@ class ConfigTest extends AbstractTestCase
             'connectionString' => $config->getConnectionString(),
             'eventHubName' => $config->getEventHubName(),
             'tableId' => $config->getTableId(),
+            'batchSize' => $config->getBatchSize(),
             'mode' => $config->getMode(),
             'column' => $config->hasColumn() ? $config->getColumn() : null,
         ];

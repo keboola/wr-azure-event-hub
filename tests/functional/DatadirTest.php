@@ -36,7 +36,7 @@ class DatadirTest extends DatadirTestCase
             // Consume new event hub messages and dump them to file.
             $this->startCollectingEventHubMessages();
             $testProcess = $this->runScript($tempDir);
-            $this->stopCollectionEventHubMessages($tempDir, $testProcess);
+            $this->stopCollectionEventHubMessages($tempDir, $specification);
         } else {
             $testProcess = $this->runScript($tempDir);
         }
@@ -53,8 +53,10 @@ class DatadirTest extends DatadirTestCase
         sleep(5);
     }
 
-    protected function stopCollectionEventHubMessages(string $tempDir, Process $testProcess): void
-    {
+    protected function stopCollectionEventHubMessages(
+        string $tempDir,
+        DatadirTestSpecificationInterface $specification
+    ): void {
         // Let's wait for the messages to be delivered.
         sleep(5);
 
@@ -72,9 +74,9 @@ class DatadirTest extends DatadirTestCase
         $this->consumerProcess->wait();
         sleep(2);
 
-        // Dump messages
+        // Dump messages if file exists in expected out
         $messages = trim($this->consumerProcess->getOutput());
-        if ($messages) {
+        if ($messages && file_exists($specification->getExpectedOutDirectory() . '/hub_messages_dump.txt')) {
             $path = $tempDir . '/out/hub_messages_dump.txt';
             file_put_contents($path, $messages . "\n");
         }

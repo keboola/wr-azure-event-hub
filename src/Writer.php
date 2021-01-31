@@ -11,7 +11,6 @@ use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Exception\ApplicationException;
 use Keboola\AzureEventHubWriter\Exception\ProcessException;
 use Keboola\AzureEventHubWriter\Exception\UserException;
-use Keboola\Csv\CsvReader;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
@@ -161,6 +160,7 @@ class Writer
             'MESSAGE_DELIMITER' => json_encode(MessageWriter::DELIMITER),
             'CONNECTION_STRING' => $this->config->getConnectionString(),
             'EVENT_HUB_NAME' => $this->config->getEventHubName(),
+            'BATCH_SIZE' => $this->config->getAction() === 'run' ? $this->config->getBatchSize() : null,
         ];
     }
 }

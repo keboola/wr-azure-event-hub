@@ -8,7 +8,6 @@ const UserError = require('./UserError.js');
 const ApplicationError = require('./ApplicationError.js');
 const messageStream = require('./messageStream');
 
-const MAX_BATCH_ITEMS = 1000;
 const PROGRESS_OUTPUT_INTERVAL_MS = 30 * 1000; // log progress each 30 seconds
 
 class Writer {
@@ -27,6 +26,7 @@ class Writer {
     this.producer = null;
     this.batch = null;
     this.batchSendPromise = null;
+    this.batchSize = parseInt(process.env.BATCH_SIZE, 10);
 
     // Stats
     this.messagesQueuedCount = 0;
@@ -85,7 +85,7 @@ class Writer {
       // 1. Batch is full (in terms of items count) OR
       // 2. Message was not added + batch is not empty => batch is full (in terms of size)
       if (
-        (isAdded && this.batch.count === MAX_BATCH_ITEMS)
+        (isAdded && this.batch.count === this.batchSize)
           || (!isAdded && this.batch.count > 0)
       ) {
         await this.sendBatchAndCreateNew();
