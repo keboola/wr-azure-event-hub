@@ -6,8 +6,10 @@
     }
   },
   "image_parameters": {
-    "hub": {
-      "#connectionString": "%env(string:CONNECTION_STRING_NORMALIZED)%"
+    "global_config": {
+      "hub": {
+        "#connectionString": "%env(string:CONNECTION_STRING_NORMALIZED)%"
+      }
     }
   }
 }
