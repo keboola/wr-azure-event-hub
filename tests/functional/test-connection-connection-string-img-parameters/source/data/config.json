@@ -1,0 +1,13 @@
+{
+  "action": "testConnection",
+  "parameters": {
+    "hub": {
+      "eventHubName": "%env(string:EVENT_HUB_NAME)%"
+    }
+  },
+  "image_parameters": {
+    "hub": {
+      "#connectionString": "%env(string:CONNECTION_STRING_NORMALIZED)%"
+    }
+  }
+}

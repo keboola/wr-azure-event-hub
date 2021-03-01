@@ -7,12 +7,23 @@ namespace Keboola\AzureEventHubWriter\Configuration;
 use Keboola\AzureEventHubWriter\Exception\InvalidStateException;
 use Keboola\AzureEventHubWriter\Exception\UserException;
 use Keboola\Component\Config\BaseConfig;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class Config extends BaseConfig
 {
     public function getConnectionString(): string
     {
-        return $this->getValue(['parameters', 'hub', '#connectionString']);
+        $connectionString = $this->getValue(['parameters', 'hub', '#connectionString'], false);
+        $imageParams = $this->getImageParameters();
+        if (isset($imageParams['hub']['#connectionString'])) {
+            $connectionString = $imageParams['hub']['#connectionString'];
+        }
+        if (!$connectionString) {
+            throw new InvalidConfigurationException(
+                'The child node "#connectionString" at path "root.parameters.hub" must be configured.'
+            );
+        }
+        return $connectionString;
     }
 
     public function getEventHubName(): string

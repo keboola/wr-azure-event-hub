@@ -21,7 +21,7 @@ class HubNode extends ArrayNodeDefinition
     protected function init(NodeBuilder $builder): void
     {
         $builder
-            ->scalarNode('#connectionString')->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('#connectionString')->end()
             ->scalarNode('eventHubName')->isRequired()->cannotBeEmpty()->end();
     }
 }

@@ -30,6 +30,25 @@ class ConfigTest extends AbstractTestCase
         new Config($configArray, new ConfigDefinition());
     }
 
+    public function testMissingConnectionString(): void
+    {
+        $configArray = [
+            'parameters' => [
+                'hub' => [
+                    'eventHubName' => $this->getHubNode()['eventHubName'],
+                ],
+                'tableId' => 'in.c-ex-generic-test.data',
+            ],
+        ];
+        $config = new Config($configArray, new ConfigDefinition());
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'The child node "#connectionString" at path "root.parameters.hub" must be configured.'
+        );
+        $config->getConnectionString();
+    }
+
     public function getValidConfigs(): iterable
     {
         yield 'minimal' => [
@@ -111,6 +130,69 @@ class ConfigTest extends AbstractTestCase
                 'column' => 'foo',
             ],
         ];
+
+        yield 'connection-string-in-parameters' => [
+            [
+                'parameters' => [
+                    'hub' => $this->getHubNode(),
+                    'tableId' => 'in.c-ex-generic-test.data',
+                ],
+            ],
+            [
+                'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
+                'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => null,
+            ],
+        ];
+
+        yield 'connection-string-in-image-parameters' => [
+            [
+                'parameters' => [
+                    'hub' => [
+                        'eventHubName' => $this->getHubNode()['eventHubName'],
+                    ],
+                    'tableId' => 'in.c-ex-generic-test.data',
+                ],
+                'image_parameters' => [
+                    'hub' => [
+                        '#connectionString' => $this->getHubNode()['#connectionString'],
+                    ],
+                ],
+            ],
+            [
+                'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=def',
+                'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => null,
+            ],
+        ];
+
+        yield 'connection-string-in-both' => [
+            [
+                'parameters' => [
+                    'hub' => $this->getHubNode(),
+                    'tableId' => 'in.c-ex-generic-test.data',
+                ],
+                'image_parameters' => [
+                    'hub' => [
+                        '#connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=fromImg',
+                    ],
+                ],
+            ],
+            [
+                'connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=fromImg',
+                'eventHubName' => 'my-event-hub',
+                'tableId' => 'in.c-ex-generic-test.data',
+                'batchSize' => ConfigDefinition::DEFAULT_BATCH_SITE,
+                'mode' => ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON,
+                'column' => null,
+            ],
+        ];
     }
 
     public function getInvalidConfigs(): iterable
@@ -123,7 +205,7 @@ class ConfigTest extends AbstractTestCase
         ];
 
         yield 'empty-hub' => [
-            'The child node "#connectionString" at path "root.parameters.hub" must be configured.',
+            'The child node "eventHubName" at path "root.parameters.hub" must be configured.',
             [
                 'parameters' => [
                     'hub' => [],
@@ -186,6 +268,7 @@ class ConfigTest extends AbstractTestCase
             ],
         ];
     }
+
 
     private function configToArray(Config $config): array
     {
