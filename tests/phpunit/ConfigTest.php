@@ -157,8 +157,10 @@ class ConfigTest extends AbstractTestCase
                     'tableId' => 'in.c-ex-generic-test.data',
                 ],
                 'image_parameters' => [
-                    'hub' => [
-                        '#connectionString' => $this->getHubNode()['#connectionString'],
+                    'global_config' => [
+                        'hub' => [
+                            '#connectionString' => $this->getHubNode()['#connectionString'],
+                        ],
                     ],
                 ],
             ],
@@ -179,8 +181,11 @@ class ConfigTest extends AbstractTestCase
                     'tableId' => 'in.c-ex-generic-test.data',
                 ],
                 'image_parameters' => [
-                    'hub' => [
-                        '#connectionString' => 'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=fromImg',
+                    'global_config' => [
+                        'hub' => [
+                            '#connectionString' =>
+                                'Endpoint=sb://abc.servicebus.windows.net;SharedAccessKeyName=fromImg',
+                        ],
                     ],
                 ],
             ],

@@ -15,8 +15,8 @@ class Config extends BaseConfig
     {
         $connectionString = $this->getValue(['parameters', 'hub', '#connectionString'], false);
         $imageParams = $this->getImageParameters();
-        if (isset($imageParams['hub']['#connectionString'])) {
-            $connectionString = $imageParams['hub']['#connectionString'];
+        if (isset($imageParams['global_config']['hub']['#connectionString'])) {
+            $connectionString = $imageParams['global_config']['hub']['#connectionString'];
         }
         if (!$connectionString) {
             throw new InvalidConfigurationException(
