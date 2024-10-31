@@ -3,10 +3,10 @@
     "description": "Azure Event Hub Writer",
     "license": "MIT",
     "require": {
-        "php": "^7.4",
+        "php": "^8.2",
         "ext-json": "*",
         "keboola/csv": "^2.2",
-        "keboola/php-component": "^8.1",
+        "keboola/php-component": "^10.1.6",
         "react/child-process": "^0.6.1",
         "react/event-loop": "^1.1",
         "react/promise": "^2.8"
@@ -14,7 +14,7 @@
     "require-dev": {
         "php-parallel-lint/php-parallel-lint": "^1.2",
         "keboola/coding-standard": ">=7.0.2",
-        "keboola/datadir-tests": "^5.2",
+        "keboola/datadir-tests": "^5.6",
         "keboola/php-temp": "^2.0",
         "phpstan/phpstan": "^0.12.14",
         "phpunit/phpunit": "^9.0",
@@ -59,6 +59,9 @@
     },
     "config": {
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

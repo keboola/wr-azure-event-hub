@@ -1,9 +1,11 @@
-FROM php:7.4-cli
+FROM php:8.2-cli
 
 ARG COMPOSER_FLAGS="--prefer-dist --no-interaction"
 ARG DEBIAN_FRONTEND=noninteractive
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_PROCESS_TIMEOUT 3600
+ENV NVM_DIR="$HOME/.nvm"
+ENV NODE_VERSION=18.20.4
 
 WORKDIR /code/
 
@@ -14,7 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         locales \
         unzip \
-        nodejs \
         gnupg \
         libssl-dev \
         libevent-dev \
@@ -24,11 +25,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& chmod +x /tmp/composer-install.sh \
 	&& /tmp/composer-install.sh
 
-# Install yarn - NodeJs package manager
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends yarn
+# Install nvm and Node
+RUN mkdir -p $NVM_DIR
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash \
+    && . "$NVM_DIR/nvm.sh" \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin/:$PATH
+
+# Install yarn
+RUN npm install -g yarn
 
 # Install ext-event dependencies
 RUN docker-php-ext-install sockets \
