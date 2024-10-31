@@ -46,7 +46,7 @@ RUN docker-php-ext-install sockets \
 
 # Install ext-event for react-php
 RUN pecl install event \
-    && docker-php-ext-enable event
+    && docker-php-ext-enable event --ini-name zz-event.ini event
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LANG=en_US.UTF-8
