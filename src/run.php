@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Keboola\AzureEventHubWriter\Component;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\Component\Logger;
-use Keboola\AzureEventHubWriter\Component;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -25,7 +25,7 @@ try {
             'errCode' => $e->getCode(),
             'errTrace' => $e->getTraceAsString(),
             'errPrevious' => is_object($e->getPrevious()) ? get_class($e->getPrevious()) : '',
-        ]
+        ],
     );
     exit(2);
 }

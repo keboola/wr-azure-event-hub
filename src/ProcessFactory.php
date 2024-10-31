@@ -29,13 +29,13 @@ class ProcessFactory
     {
         $fileDescriptors = [
             // STDIN
-            0 => array('pipe', 'r'),
+            0 => ['pipe', 'r'],
             // STDOUT
-            1 => array('pipe', 'w'),
+            1 => ['pipe', 'w'],
             // STDERR
-            2 => array('pipe', 'w'),
+            2 => ['pipe', 'w'],
             // MESSAGE STREAM (custom)
-            self::MESSAGE_STREAM_FD => array('pipe', 'r'),
+            self::MESSAGE_STREAM_FD => ['pipe', 'r'],
         ];
 
         // Let NodeJs script know which file descriptor should be used to write JSON documents to
@@ -55,7 +55,7 @@ class ProcessFactory
         // Log process stderr output as warning
         $process->stderr->on('data', function (string $chunk): void {
             foreach ($this->explodeLines($chunk) as $line) {
-                $this->logger->warning($line);
+                $this->logger->warning((string) $line);
             }
         });
 
@@ -67,7 +67,7 @@ class ProcessFactory
                 $deferred->resolve();
             } else {
                 $deferred->reject(
-                    new ProcessException(sprintf('Process "%s" exited with code "%d".', $cmd, $exitCode), $exitCode)
+                    new ProcessException(sprintf('Process "%s" exited with code "%d".', $cmd, $exitCode), $exitCode),
                 );
             }
 
@@ -78,6 +78,9 @@ class ProcessFactory
         return new ProcessWrapper($process, $deferred->promise());
     }
 
+    /**
+     * @return Generator<string>
+     */
     private function explodeLines(string $str): Generator
     {
         foreach (explode("\n", $str) as $line) {

@@ -15,13 +15,13 @@ class ProcessFactoryTest extends AbstractTestCase
         $process->getPromise()->done(); // ensures exception if the process fails
         $this->loop->run();
 
-        Assert::assertTrue($this->logger->hasInfoThatContains('stdout1'));
-        Assert::assertTrue($this->logger->hasInfoThatContains('stdout2'));
-        Assert::assertTrue($this->logger->hasInfoThatContains('stdout3'));
-        Assert::assertTrue($this->logger->hasInfoThatContains('stdout4'));
-        Assert::assertTrue($this->logger->hasWarningThatContains('stderr1'));
-        Assert::assertTrue($this->logger->hasWarningThatContains('stderr2'));
-        Assert::assertTrue($this->logger->hasDebugThatMatches('~Process ".*" completed successfully.~'));
+        Assert::assertTrue($this->loggerTestHandler->hasInfoThatContains('stdout1'));
+        Assert::assertTrue($this->loggerTestHandler->hasInfoThatContains('stdout2'));
+        Assert::assertTrue($this->loggerTestHandler->hasInfoThatContains('stdout3'));
+        Assert::assertTrue($this->loggerTestHandler->hasInfoThatContains('stdout4'));
+        Assert::assertTrue($this->loggerTestHandler->hasWarningThatContains('stderr1'));
+        Assert::assertTrue($this->loggerTestHandler->hasWarningThatContains('stderr2'));
+        Assert::assertTrue($this->loggerTestHandler->hasDebugThatMatches('~Process ".*" completed successfully.~'));
     }
 
     public function testFailedProcess(): void
@@ -37,8 +37,8 @@ class ProcessFactoryTest extends AbstractTestCase
             Assert::assertStringMatchesFormat('Process "%a/exitCode.js" exited with code "123".', $e->getMessage());
         }
 
-        Assert::assertTrue($this->logger->hasWarningThatContains('stderr1'));
-        Assert::assertTrue($this->logger->hasWarningThatContains('stderr2'));
-        Assert::assertFalse($this->logger->hasDebugThatMatches('~Process ".*" completed successfully.~'));
+        Assert::assertTrue($this->loggerTestHandler->hasWarningThatContains('stderr1'));
+        Assert::assertTrue($this->loggerTestHandler->hasWarningThatContains('stderr2'));
+        Assert::assertFalse($this->loggerTestHandler->hasDebugThatMatches('~Process ".*" completed successfully.~'));
     }
 }

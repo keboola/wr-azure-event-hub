@@ -44,7 +44,7 @@ class ConfigTest extends AbstractTestCase
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
-            'The child node "#connectionString" at path "root.parameters.hub" must be configured.'
+            'The child node "#connectionString" at path "root.parameters.hub" must be configured.',
         );
         $config->getConnectionString();
     }

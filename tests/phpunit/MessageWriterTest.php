@@ -12,10 +12,8 @@ class MessageWriterTest extends AbstractTestCase
 {
     /**
      * @dataProvider getData
-     * @param mixed $input
-     * @param string $expectedOutput
      */
-    public function testMessageWriter($input, string $expectedOutput): void
+    public function testMessageWriter(mixed $input, string $expectedOutput): void
     {
         $output = '';
         $stream = new ThroughStream();

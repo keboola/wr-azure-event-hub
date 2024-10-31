@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Keboola\AzureEventHubWriter\FunctionalTests;
 
-use RuntimeException;
 use Keboola\DatadirTests\DatadirTestCase;
 use Keboola\DatadirTests\DatadirTestSpecificationInterface;
+use RuntimeException;
 use Symfony\Component\Process\Process;
 
 class DatadirTest extends DatadirTestCase
@@ -55,7 +55,7 @@ class DatadirTest extends DatadirTestCase
 
     protected function stopCollectionEventHubMessages(
         string $tempDir,
-        DatadirTestSpecificationInterface $specification
+        DatadirTestSpecificationInterface $specification,
     ): void {
         // Let's wait for the messages to be delivered.
         sleep(5);
@@ -65,7 +65,7 @@ class DatadirTest extends DatadirTestCase
             throw new RuntimeException(sprintf(
                 'Consumer helper process failed, STDERR=%s, STDOUT=%s',
                 $this->consumerProcess->getErrorOutput(),
-                $this->consumerProcess->getOutput()
+                $this->consumerProcess->getOutput(),
             ));
         }
 

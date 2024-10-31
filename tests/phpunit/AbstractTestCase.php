@@ -6,24 +6,25 @@ namespace Keboola\AzureEventHubWriter\Tests;
 
 use Keboola\AzureEventHubWriter\ProcessFactory;
 use Keboola\AzureEventHubWriter\ProcessWrapper;
+use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 
 abstract class AbstractTestCase extends TestCase
 {
-    protected TestLogger $logger;
-
+    protected Logger $logger;
+    protected TestHandler $loggerTestHandler;
     protected LoopInterface $loop;
-
     protected ProcessFactory $processFactory;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->logger = new TestLogger();
-        $this->loop = Factory::create();
+        $this->loggerTestHandler = new TestHandler();
+        $this->logger = new Logger('test', [$this->loggerTestHandler]);
+        $this->loop = Loop::get();
         $this->processFactory = new ProcessFactory($this->logger, $this->loop);
     }
 

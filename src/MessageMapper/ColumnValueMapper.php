@@ -32,7 +32,7 @@ class ColumnValueMapper implements MessageMapper
             throw new UserException(sprintf(
                 'Column "%s" not found in table "%s".',
                 $this->column,
-                $config->getTableId()
+                $config->getTableId(),
             ));
         }
 
@@ -46,7 +46,7 @@ class ColumnValueMapper implements MessageMapper
     public function getMessages(): Iterator
     {
         while ($this->csvReader->valid()) {
-            $row = $this->csvReader->current();
+            $row = (array) $this->csvReader->current();
             $rawMessage = $row[$this->columnIndex];
 
             // Try convert to JSON object
