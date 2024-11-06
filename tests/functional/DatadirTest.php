@@ -47,7 +47,7 @@ class DatadirTest extends DatadirTestCase
     protected function startCollectingEventHubMessages(): void
     {
         $scriptPath = __DIR__ . '/hubConsumer.js';
-        $this->consumerProcess = new Process(['nodejs', $scriptPath]);
+        $this->consumerProcess = new Process(['node', $scriptPath]);
         $this->consumerProcess->setTimeout(100.0);
         $this->consumerProcess->start();
         sleep(5);

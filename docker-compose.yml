@@ -1,10 +1,15 @@
 services:
-  dev:
-    build: .
-    volumes:
-      - ./:/code
-      - ./data:/data
+  app: &base
+    build:
+      context: .
+    image: keboola/wr-azure-event-hub
     environment:
       - CONNECTION_STRING
       - EVENT_HUB_NAME
       - CONSUMER_GROUP_NAME
+
+  dev:
+    <<: *base
+    volumes:
+      - .:/code
+      - ./data:/data

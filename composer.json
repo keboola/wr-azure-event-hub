@@ -5,7 +5,7 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
-        "keboola/csv": "^2.2",
+        "keboola/csv": "^4.1",
         "keboola/php-component": "^10.1.6",
         "react/child-process": "^0.6.1",
         "react/event-loop": "^1.1",
