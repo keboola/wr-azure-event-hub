@@ -1,1 +1,1 @@
-Connection error: Missing 'host' in configuration. Please, check connection string.
+Connection error: Missing 'sharedAccessKeyName' in configuration. Please, check connection string.
