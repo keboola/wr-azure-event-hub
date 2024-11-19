@@ -32,7 +32,7 @@ class RowAsJsonMapper implements MessageMapper
     public function getMessages(): Iterator
     {
         while ($this->csvReader->valid()) {
-            yield  array_combine($this->header, (array) $this->csvReader->current());
+            yield  ['message' => array_combine($this->header, (array) $this->csvReader->current())];
             $this->csvReader->next();
         }
     }

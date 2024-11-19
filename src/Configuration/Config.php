@@ -76,4 +76,14 @@ class Config extends BaseConfig
     {
         return $this->getIntValue(['parameters', 'batchSize']);
     }
+
+    public function getPropertiesColumn(): ?string
+    {
+        $configData = $this->getData();
+        if (!isset($configData['parameters']['propertiesColumn'])) {
+            return null;
+        }
+
+        return $this->getStringValue(['parameters', 'propertiesColumn']);
+    }
 }

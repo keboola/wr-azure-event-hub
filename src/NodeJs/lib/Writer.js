@@ -1,8 +1,8 @@
 'use strict';
 
-const { EventHubProducerClient } = require('@azure/event-hubs');
-const { MessagingError } = require('@azure/core-amqp');
-const { Transform } = require('stream');
+const {EventHubProducerClient} = require('@azure/event-hubs');
+const {MessagingError} = require('@azure/core-amqp');
+const {Transform} = require('stream');
 const binarySplit = require('binary-split');
 const UserError = require('./UserError.js');
 const ApplicationError = require('./ApplicationError.js');
@@ -65,7 +65,9 @@ class Writer {
       }
 
       // Try to add
-      const isAdded = this.batch.tryAdd({ body: message });
+      const eventData = this.messageToEventData(message);
+
+      const isAdded = this.batch.tryAdd(eventData);
 
       // Message was not added + batch is empty => message is too large
       if (!isAdded && this.batch.count === 0) {
@@ -86,11 +88,31 @@ class Writer {
       // 2. Message was not added + batch is not empty => batch is full (in terms of size)
       if (
         (isAdded && this.batch.count === this.batchSize)
-          || (!isAdded && this.batch.count > 0)
+        || (!isAdded && this.batch.count > 0)
       ) {
         await this.sendBatchAndCreateNew();
       }
     }
+  }
+
+  messageToEventData(message) {
+    let eventData = {
+      body: message.message,
+    }
+    if (message.properties) {
+      if (message.properties.correlationId) {
+        eventData.correlationId = message.properties.correlationId;
+        delete message.properties.correlationId;
+      }
+      if (message.properties.messageId) {
+        eventData.messageId = message.properties.messageId;
+        delete message.properties.messageId;
+      }
+      if (message.properties) {
+        eventData.properties = message.properties;
+      }
+    }
+    return eventData;
   }
 
   async sendBatchAndCreateNew() {
@@ -135,7 +157,7 @@ class Writer {
       }));
 
     /* eslint no-restricted-syntax: "off" */
-    for await (const message of messages) {
+    for await(const message of messages) {
       yield message;
     }
   }
@@ -160,7 +182,8 @@ class Writer {
 
         case e instanceof TypeError:
           throw new UserError(
-            `Connection error: ${e.message.replace(/\\.\\s*$/, '')}. Please, check connection string.`
+            `Connection error: ${e.message.replace(/\\.\\s*$/, '')}. Please,
+                    check connection string.`
           );
 
         case e instanceof MessagingError:
@@ -176,7 +199,7 @@ class Writer {
     if (this.messagesSentCount) {
       console.log(
         `Done: Sent "${this.messagesSentCount}" messages / "${this.batchesSentCount}" batches `
-          + `to the event hub "${this.eventHubName}".`
+        + `to the event hub "${this.eventHubName}".`
       );
     } else {
       console.log('Done: No message was sent.');
