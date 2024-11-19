@@ -79,6 +79,7 @@ class Config extends BaseConfig
 
     public function getPropertiesColumn(): ?string
     {
+        /** @var array $configData */
         $configData = $this->getData();
         if (!isset($configData['parameters']['propertiesColumn'])) {
             return null;
