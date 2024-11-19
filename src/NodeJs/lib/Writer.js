@@ -182,8 +182,7 @@ class Writer {
 
         case e instanceof TypeError:
           throw new UserError(
-            `Connection error: ${e.message.replace(/\\.\\s*$/, '')}. Please,
-                    check connection string.`
+            `Connection error: ${e.message.replace(/\\.\\s*$/, '')}. Please, check connection string.`
           );
 
         case e instanceof MessagingError:
