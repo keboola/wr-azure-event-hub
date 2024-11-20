@@ -157,7 +157,7 @@ class Writer {
       }));
 
     /* eslint no-restricted-syntax: "off" */
-    for await(const message of messages) {
+    for await (const message of messages) {
       yield message;
     }
   }
