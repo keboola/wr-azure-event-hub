@@ -62,6 +62,7 @@ class ConfigDefinition extends BaseConfigDefinition
                     ->defaultValue(self::MODE_MESSAGE_ROW_AS_JSON)
                 ->end()
                 ->scalarNode('column')->end()
+                ->scalarNode('propertiesColumn')->end()
             ->end()
         ;
 
@@ -72,6 +73,12 @@ class ConfigDefinition extends BaseConfigDefinition
                     if (!empty($v['column'])) {
                         throw new InvalidConfigurationException(sprintf(
                             'Invalid configuration, "column" is configured, but "mode" is set to "%s".',
+                            self::MODE_MESSAGE_ROW_AS_JSON,
+                        ));
+                    }
+                    if (!empty($v['propertiesColumn'])) {
+                        throw new InvalidConfigurationException(sprintf(
+                            'Invalid configuration, "propertiesColumn" is configured, but "mode" is set to "%s".',
                             self::MODE_MESSAGE_ROW_AS_JSON,
                         ));
                     }

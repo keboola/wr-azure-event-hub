@@ -15,8 +15,10 @@ class ColumnValueMapper implements MessageMapper
     private CsvReader $csvReader;
 
     private string $column;
-
     private int $columnIndex;
+
+    private ?string $propertiesColumn;
+    private ?int $propertiesColumnIndex = null;
 
     private array $header;
 
@@ -24,20 +26,15 @@ class ColumnValueMapper implements MessageMapper
     {
         $this->csvReader = $csvReader;
         $this->column = $config->getColumn();
+        $this->propertiesColumn = $config->getPropertiesColumn();
         $this->header = (array) $csvReader->getHeader();
 
-        // Validate: defined column must be present in the input table
-        $columnIndex = array_search($this->column, $this->header);
-        if (!is_int($columnIndex)) {
-            throw new UserException(sprintf(
-                'Column "%s" not found in table "%s".',
-                $this->column,
-                $config->getTableId(),
-            ));
-        }
-
         // Get column index
-        $this->columnIndex = $columnIndex;
+        $this->columnIndex = $this->getColumnIndex($this->column, $config);
+
+        if ($this->propertiesColumn) {
+            $this->propertiesColumnIndex = $this->getColumnIndex($this->propertiesColumn, $config);
+        }
 
         // Skip header
         $this->csvReader->next();
@@ -51,12 +48,42 @@ class ColumnValueMapper implements MessageMapper
 
             // Try convert to JSON object
             try {
-                yield json_decode($rawMessage, false, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
-                yield ['data' => $rawMessage];
+                $message['message'] = json_decode($rawMessage, false, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException) {
+                $message['message'] = ['data' => $rawMessage];
             }
+
+            if ($this->propertiesColumnIndex) {
+                $properties = $row[$this->propertiesColumnIndex] ?? null;
+                try {
+                    $message['properties'] = json_decode($properties, false, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException) {
+                    // properties must be json
+                    throw new UserException(sprintf(
+                        'Error decoding JSON in properties column "%s".',
+                        $this->propertiesColumn,
+                    ));
+                }
+            }
+
+            yield $message;
 
             $this->csvReader->next();
         }
+    }
+
+    private function getColumnIndex(string $columnName, Config $config): int
+    {
+        // Validate: defined column must be present in the input table
+        $columnIndex = array_search($columnName, $this->header);
+        if (!is_int($columnIndex)) {
+            throw new UserException(sprintf(
+                'Column "%s" not found in table "%s".',
+                $this->column,
+                $config->getTableId(),
+            ));
+        }
+
+        return $columnIndex;
     }
 }
