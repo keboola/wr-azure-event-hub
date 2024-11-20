@@ -34,7 +34,7 @@ class ConfigDefinition extends BaseConfigDefinition
                 // No table found
                 throw new InvalidConfigurationException(sprintf(
                     'Please define one table in the input mapping, found %d tables.',
-                    count($inputTables)
+                    count($inputTables),
                 ));
             }
 
@@ -72,7 +72,7 @@ class ConfigDefinition extends BaseConfigDefinition
                     if (!empty($v['column'])) {
                         throw new InvalidConfigurationException(sprintf(
                             'Invalid configuration, "column" is configured, but "mode" is set to "%s".',
-                            self::MODE_MESSAGE_ROW_AS_JSON
+                            self::MODE_MESSAGE_ROW_AS_JSON,
                         ));
                     }
                     break;
@@ -80,7 +80,7 @@ class ConfigDefinition extends BaseConfigDefinition
                     if (empty($v['column'])) {
                         throw new InvalidConfigurationException(sprintf(
                             'Invalid configuration, missing "column" key, "mode" is set to "%s".',
-                            self::MODE_MESSAGE_COLUMN_VALUE
+                            self::MODE_MESSAGE_COLUMN_VALUE,
                         ));
                     }
                     break;

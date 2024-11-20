@@ -46,10 +46,7 @@ class MessageWriter
         return $this->processed;
     }
 
-    /**
-     * @param mixed $message
-     */
-    public function writeMessage($message): void
+    public function writeMessage(mixed $message): void
     {
         $this->write((string) json_encode($message, JSON_THROW_ON_ERROR));
         $this->write(self::DELIMITER);

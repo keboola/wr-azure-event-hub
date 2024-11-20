@@ -24,7 +24,7 @@ class Component extends BaseComponent
         $config = $this->getConfig();
         $dataDir = $this->getDataDir();
         $messageMapperFactory = new MessageMapperFactory($config, $dataDir);
-        $this->writer = new Writer($this->getLogger(), $dataDir, $config, $messageMapperFactory);
+        $this->writer = new Writer($this->getLogger(), $config, $messageMapperFactory);
     }
 
     protected function run(): void

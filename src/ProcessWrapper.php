@@ -9,6 +9,7 @@ use React\Promise\ExtendedPromiseInterface;
 use React\Promise\PromiseInterface;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
+use UnexpectedValueException;
 
 /**
  * Helper class,
@@ -23,7 +24,7 @@ class ProcessWrapper
     public function __construct(Process $process, PromiseInterface $promise)
     {
         if (!$promise instanceof ExtendedPromiseInterface) {
-            throw new \UnexpectedValueException('Expected ExtendedPromiseInterface.');
+            throw new UnexpectedValueException('Expected ExtendedPromiseInterface.');
         }
 
         $this->process = $process;

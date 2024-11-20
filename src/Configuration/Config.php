@@ -20,7 +20,7 @@ class Config extends BaseConfig
         }
         if (!$connectionString) {
             throw new InvalidConfigurationException(
-                'The child node "#connectionString" at path "root.parameters.hub" must be configured.'
+                'The child node "#connectionString" at path "root.parameters.hub" must be configured.',
             );
         }
         return $connectionString;
@@ -28,12 +28,12 @@ class Config extends BaseConfig
 
     public function getEventHubName(): string
     {
-        return $this->getValue(['parameters', 'hub', 'eventHubName']);
+        return $this->getStringValue(['parameters', 'hub', 'eventHubName']);
     }
 
     public function getTableId(): string
     {
-        return $this->getValue(['parameters', 'tableId']);
+        return $this->getStringValue(['parameters', 'tableId']);
     }
 
     public function getTable(): array
@@ -55,7 +55,7 @@ class Config extends BaseConfig
 
     public function getMode(): string
     {
-        return $this->getValue(['parameters', 'mode']);
+        return $this->getStringValue(['parameters', 'mode']);
     }
 
     public function hasColumn(): bool
@@ -69,11 +69,11 @@ class Config extends BaseConfig
             throw new InvalidStateException('The "column" item is not set.');
         }
 
-        return $this->getValue(['parameters', 'column']);
+        return $this->getStringValue(['parameters', 'column']);
     }
 
     public function getBatchSize(): int
     {
-        return $this->getValue(['parameters', 'batchSize']);
+        return $this->getIntValue(['parameters', 'batchSize']);
     }
 }

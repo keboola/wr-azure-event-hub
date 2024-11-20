@@ -23,7 +23,7 @@ class RowAsJsonMapper implements MessageMapper
         if (!$header) {
             throw new ApplicationException(sprintf('Missing CSV header.'));
         }
-        $this->header = $header;
+        $this->header = (array) $header;
 
         // Skip header
         $this->csvReader->next();
@@ -32,7 +32,7 @@ class RowAsJsonMapper implements MessageMapper
     public function getMessages(): Iterator
     {
         while ($this->csvReader->valid()) {
-            yield  array_combine($this->header, $this->csvReader->current());
+            yield  array_combine($this->header, (array) $this->csvReader->current());
             $this->csvReader->next();
         }
     }

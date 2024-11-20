@@ -1,7 +1,6 @@
 parameters:
-    checkMissingIterableValueType: false
     ignoreErrors:
+        - identifier: missingType.iterableValue
         - '#Cannot call method .* React\\Stream\\ReadableStreamInterface\|.*#'
         - '#Cannot call method .* on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null.#'
-        # Bad type comment in the library:
-        - '#Cannot access offset 3 on React\\Stream\\ReadableStreamInterface\|React\\Stream\\WritableStreamInterface.#'
+        - '#Parameter \#1 \$json of function json_decode expects string, mixed given.#'

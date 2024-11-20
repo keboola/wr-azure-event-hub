@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Keboola\AzureEventHubWriter\MessageMapper;
 
-use Keboola\AzureEventHubWriter\Exception\ApplicationException;
-use Keboola\Csv\CsvReader;
 use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Configuration\ConfigDefinition;
+use Keboola\AzureEventHubWriter\Exception\ApplicationException;
 use Keboola\AzureEventHubWriter\Exception\UnexpectedValueException;
+use Keboola\Csv\CsvReader;
 
 class MessageMapperFactory
 {

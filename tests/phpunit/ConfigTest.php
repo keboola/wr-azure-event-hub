@@ -26,7 +26,7 @@ class ConfigTest extends AbstractTestCase
     public function testInvalidConfig(string $expectedMsg, array $configArray): void
     {
         $this->expectException(InvalidConfigurationException::class);
-        $this->expectDeprecationMessage($expectedMsg);
+        $this->expectExceptionMessage($expectedMsg);
         new Config($configArray, new ConfigDefinition());
     }
 
@@ -44,7 +44,7 @@ class ConfigTest extends AbstractTestCase
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
-            'The child node "#connectionString" at path "root.parameters.hub" must be configured.'
+            'The child node "#connectionString" at path "root.parameters.hub" must be configured.',
         );
         $config->getConnectionString();
     }
@@ -203,14 +203,14 @@ class ConfigTest extends AbstractTestCase
     public function getInvalidConfigs(): iterable
     {
         yield 'empty' => [
-            'The child node "hub" at path "root.parameters" must be configured.',
+            'The child config "hub" under "root.parameters" must be configured.',
             [
                 'parameters' => [],
             ],
         ];
 
         yield 'empty-hub' => [
-            'The child node "eventHubName" at path "root.parameters.hub" must be configured.',
+            'The child config "eventHubName" under "root.parameters.hub" must be configured.',
             [
                 'parameters' => [
                     'hub' => [],

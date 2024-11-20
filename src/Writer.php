@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace Keboola\AzureEventHubWriter;
 
-use Throwable;
 use Iterator;
-use Keboola\AzureEventHubWriter\MessageMapper\MessageMapperFactory;
 use Keboola\AzureEventHubWriter\Configuration\Config;
 use Keboola\AzureEventHubWriter\Exception\ApplicationException;
 use Keboola\AzureEventHubWriter\Exception\ProcessException;
 use Keboola\AzureEventHubWriter\Exception\UserException;
+use Keboola\AzureEventHubWriter\MessageMapper\MessageMapperFactory;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory as EventLoopFactory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
+use Throwable;
 
 class Writer
 {
-    public const LOG_PROGRESS_SECONDS = 30;
     public const CSV_ROWS_BATCH_SIZE = 10;
 
     private LoggerInterface $logger;
-
-    private string $dataDir;
 
     private Config $config;
 
@@ -34,15 +31,13 @@ class Writer
 
     public function __construct(
         LoggerInterface $logger,
-        string $dataDir,
         Config $config,
-        MessageMapperFactory $messageMapperFactory
+        MessageMapperFactory $messageMapperFactory,
     ) {
         $this->logger = $logger;
-        $this->dataDir = $dataDir;
         $this->config = $config;
         $this->messageMapperFactory = $messageMapperFactory;
-        $this->loop = EventLoopFactory::create();
+        $this->loop = Loop::get();
         $this->processFactory = new ProcessFactory($this->logger, $this->loop);
     }
 
@@ -81,7 +76,7 @@ class Writer
         $this->logger->info(sprintf(
             'Exporting table "%s" in "%s" mode ...',
             $this->config->getTableId(),
-            $this->config->getMode()
+            $this->config->getMode(),
         ));
 
         // Create mapper
@@ -113,7 +108,7 @@ class Writer
         $this->logger->info(sprintf(
             'Exported all %d rows from the table "%s".',
             $messageWriter->getCount(),
-            $this->config->getTableId()
+            $this->config->getTableId(),
         ));
     }
 
