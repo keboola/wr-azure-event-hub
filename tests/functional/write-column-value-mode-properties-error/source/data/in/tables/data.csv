@@ -1,0 +1,3 @@
+"id","json","properties"
+"1","{""foo1"": ""bar1""}","not a json"
+"2","{""foo2"": ""bar2""}","{""bad"":""json"" ""syntax"" = ""2"",""otherProperty"":""something2""}"
