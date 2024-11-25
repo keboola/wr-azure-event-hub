@@ -53,7 +53,7 @@ class ColumnValueMapper implements MessageMapper
                 $message['message'] = ['data' => $rawMessage];
             }
 
-            if ($this->propertiesColumnIndex) {
+            if ($this->propertiesColumnIndex !== null) {
                 $properties = $row[$this->propertiesColumnIndex] ?? null;
                 try {
                     $message['properties'] = json_decode($properties, false, 512, JSON_THROW_ON_ERROR);
@@ -76,10 +76,11 @@ class ColumnValueMapper implements MessageMapper
     {
         // Validate: defined column must be present in the input table
         $columnIndex = array_search($columnName, $this->header);
+
         if (!is_int($columnIndex)) {
             throw new UserException(sprintf(
                 'Column "%s" not found in table "%s".',
-                $this->column,
+                $columnName,
                 $config->getTableId(),
             ));
         }

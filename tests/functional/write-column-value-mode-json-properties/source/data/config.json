@@ -16,7 +16,7 @@
     },
     "tableId": "in.c-test.data",
     "mode": "column_value",
-    "column": "text",
+    "column": "json",
     "propertiesColumn": "properties"
   }
 }
