@@ -112,6 +112,8 @@ class Writer {
         eventData.properties = message.properties;
       }
     }
+    eventData.contentType = 'application/json'
+
     return eventData;
   }
 
