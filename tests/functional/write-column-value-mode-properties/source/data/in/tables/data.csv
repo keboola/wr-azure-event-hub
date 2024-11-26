@@ -1,0 +1,5 @@
+"id","text","properties"
+"1","Just a text","{""correlationId"":""1"", ""messageId"":""1"",""otherProperty"":""something""}"
+"2","Not in a JSON format","{""correlationId"":""2"", ""messageId"":""2"",""otherProperty"":""something2""}"
+"3","Plain vanilla text","{""correlationId"":""3"", ""messageId"":""2"",""otherProperty"":""something2""}"
+"4","Will be prefixed with data","{""otherProperty"":""something2""}"

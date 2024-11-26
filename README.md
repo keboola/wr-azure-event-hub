@@ -21,6 +21,7 @@ The configuration `config.json` contains following properties in `parameters` ke
     - `row_as_json` (default) - Message is row in the JSON format, eg. `{"id": 1, "name": "John"}`.
     - `column_value` - Message is value of the defined `column`, eg. `John`.
 - `column` - string (optional): Name of the column for `mode` = `column_value`.
+- `propertiesColumns` - string (optional): Name of the column with properties (correlationId, messageId, ...) in JSON format for `mode` = `column_value`.
 
 
 ## Development
