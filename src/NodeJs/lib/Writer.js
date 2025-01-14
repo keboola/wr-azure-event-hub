@@ -97,7 +97,7 @@ class Writer {
 
   messageToEventData(message) {
     let eventData = {
-      body: message.message,
+      body: message.message.toString('utf8'),
     }
     if (message.properties) {
       if (message.properties.correlationId) {
