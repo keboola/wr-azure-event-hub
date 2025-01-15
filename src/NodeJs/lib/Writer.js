@@ -97,19 +97,21 @@ class Writer {
 
   messageToEventData(message) {
     let eventData = {
-      body: message.message.toString('utf8'),
+      body: message.message,
     }
     if (message.properties) {
       if (message.properties.correlationId) {
-        eventData.correlationId = message.properties.correlationId;
+        eventData.correlationId = message.properties.correlationId.toString('utf8');
         delete message.properties.correlationId;
       }
       if (message.properties.messageId) {
-        eventData.messageId = message.properties.messageId;
+        eventData.messageId = message.properties.messageId.toString('utf8');
         delete message.properties.messageId;
       }
       if (message.properties) {
-        eventData.properties = message.properties;
+        for (const [key, value] of Object.entries(message.properties)) {
+          eventData.properties[key] = value.toString('utf8');
+        }
       }
     }
     eventData.contentType = 'application/json'
