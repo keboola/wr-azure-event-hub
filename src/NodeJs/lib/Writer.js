@@ -10,6 +10,12 @@ const messageStream = require('./messageStream');
 
 const PROGRESS_OUTPUT_INTERVAL_MS = 30 * 1000; // log progress each 30 seconds
 
+function toUtf8String(value) {
+  return typeof value === 'string'
+    ? value.toString('utf8')
+    : value
+}
+
 class Writer {
   constructor() {
     // Check environment variables
@@ -101,16 +107,17 @@ class Writer {
     }
     if (message.properties) {
       if (message.properties.correlationId) {
-        eventData.correlationId = message.properties.correlationId.toString('utf8');
+        eventData.correlationId = toUtf8String(message.properties.correlationId);
         delete message.properties.correlationId;
       }
       if (message.properties.messageId) {
-        eventData.messageId = message.properties.messageId.toString('utf8');
+        eventData.messageId = toUtf8String(message.properties.messageId);
         delete message.properties.messageId;
       }
       if (message.properties) {
+        eventData.properties = {};
         for (const [key, value] of Object.entries(message.properties)) {
-          eventData.properties[key] = value.toString('utf8');
+          eventData.properties[key] = toUtf8String(value);
         }
       }
     }

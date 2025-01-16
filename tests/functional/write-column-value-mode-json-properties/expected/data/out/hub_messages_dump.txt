@@ -3,3 +3,4 @@ Message 002, content: {"foo2":"bar2"}, correlationId: 2, messageId: 2, propertie
 Message 003, content: {"foo3":"bar3"}, correlationId: 3, messageId: 3, properties: {"otherProperty":"something3"}
 Message 004, content: {"foo4":"bar4"}, correlationId: text, properties: {"otherProperty":"something2"}
 Message 005, content: {"foo5":"bar5"}, properties: {"otherProperty":"something5"}
+Message 006, content: {"foo5":"bar5"}, properties: {"numberProperty":772}

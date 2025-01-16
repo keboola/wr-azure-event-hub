@@ -4,3 +4,4 @@
 "{""correlationId"":""3"",  ""messageId"":""3"", ""otherProperty"":""something3""}","{""foo3"": ""bar3""}"
 "{""correlationId"":""text"", ""otherProperty"":""something2""}","{""foo4"": ""bar4""}"
 "{""otherProperty"":""something5""}","{""foo5"": ""bar5""}"
+"{""numberProperty"":772}","{""foo5"": ""bar5""}"
