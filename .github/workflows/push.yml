@@ -1,5 +1,5 @@
 name: GitHub Actions
-on: [ push ]
+on: [ push, workflow_dispatch ]
 concurrency: ci-${{ github.ref }} # to avoid tag collisions in the ECR
 env:
   # Test image, must be same in the docker-compose.yml if used
