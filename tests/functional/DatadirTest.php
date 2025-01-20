@@ -22,8 +22,6 @@ class DatadirTest extends DatadirTestCase
         $connectionString = (string) getenv('CONNECTION_STRING');
         $connectionString = (string) preg_replace('~EntityPath=[^=;]+~', '', $connectionString);
 
-        var_dump($connectionString);
-
         putenv("CONNECTION_STRING_NORMALIZED={$connectionString}");
         putenv("CONNECTION_STRING_BAD_ENTITY_PATH={$connectionString};EntityPath=test");
     }
