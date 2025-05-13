@@ -70,6 +70,6 @@ class RowAsJsonMapper implements MessageMapper
             ));
         }
 
-        return $columnIndex;
+        return (int) $columnIndex;
     }
 }
