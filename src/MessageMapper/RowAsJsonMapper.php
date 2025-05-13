@@ -14,9 +14,9 @@ class RowAsJsonMapper implements MessageMapper
     private CsvReader $csvReader;
 
     private array $header;
-    
+
     private ?string $partitionKeyColumn;
-    
+
     private ?int $partitionKeyColumnIndex = null;
 
     public function __construct(CsvReader $csvReader, ?string $partitionKeyColumn = null)
@@ -30,7 +30,7 @@ class RowAsJsonMapper implements MessageMapper
             throw new ApplicationException(sprintf('Missing CSV header.'));
         }
         $this->header = (array) $header;
-        
+
         // Get partition key column index if specified
         if ($this->partitionKeyColumn) {
             $this->partitionKeyColumnIndex = $this->getColumnIndex($this->partitionKeyColumn);
@@ -45,7 +45,7 @@ class RowAsJsonMapper implements MessageMapper
         while ($this->csvReader->valid()) {
             $row = (array) $this->csvReader->current();
             $message = ['message' => array_combine($this->header, $row)];
-            
+
             // Add partition key if the column is specified
             if ($this->partitionKeyColumnIndex !== null) {
                 $partitionKey = $row[$this->partitionKeyColumnIndex] ?? null;
@@ -53,12 +53,12 @@ class RowAsJsonMapper implements MessageMapper
                     $message['partitionKey'] = $partitionKey;
                 }
             }
-            
+
             yield $message;
             $this->csvReader->next();
         }
     }
-    
+
     private function getColumnIndex(string $columnName): int
     {
         $columnIndex = array_search($columnName, $this->header);
@@ -66,7 +66,7 @@ class RowAsJsonMapper implements MessageMapper
         if ($columnIndex === false) {
             throw new UserException(sprintf(
                 'Partition key column "%s" not found in the table.',
-                $columnName
+                $columnName,
             ));
         }
 

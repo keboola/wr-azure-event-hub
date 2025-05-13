@@ -19,7 +19,7 @@ class ColumnValueMapper implements MessageMapper
 
     private ?string $propertiesColumn;
     private ?int $propertiesColumnIndex = null;
-    
+
     private ?string $partitionKeyColumn;
     private ?int $partitionKeyColumnIndex = null;
 
@@ -39,7 +39,7 @@ class ColumnValueMapper implements MessageMapper
         if ($this->propertiesColumn) {
             $this->propertiesColumnIndex = $this->getColumnIndex($this->propertiesColumn, $config);
         }
-        
+
         if ($this->partitionKeyColumn) {
             $this->partitionKeyColumnIndex = $this->getColumnIndex($this->partitionKeyColumn, $config);
         }
@@ -73,7 +73,7 @@ class ColumnValueMapper implements MessageMapper
                     ));
                 }
             }
-            
+
             // Add partition key if the column is specified
             if ($this->partitionKeyColumnIndex !== null) {
                 $partitionKey = $row[$this->partitionKeyColumnIndex] ?? null;
