@@ -22,6 +22,7 @@ The configuration `config.json` contains following properties in `parameters` ke
     - `column_value` - Message is value of the defined `column`, eg. `John`.
 - `column` - string (optional): Name of the column for `mode` = `column_value`.
 - `propertiesColumns` - string (optional): Name of the column with properties (correlationId, messageId, ...) in JSON format for `mode` = `column_value`.
+- `partitionKeyColumn` - string (optional): Name of the column containing the partition key values. If not specified, Azure Event Hub will handle partition assignment automatically.
 
 
 ## Development

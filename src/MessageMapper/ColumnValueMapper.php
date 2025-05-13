@@ -19,6 +19,9 @@ class ColumnValueMapper implements MessageMapper
 
     private ?string $propertiesColumn;
     private ?int $propertiesColumnIndex = null;
+    
+    private ?string $partitionKeyColumn;
+    private ?int $partitionKeyColumnIndex = null;
 
     private array $header;
 
@@ -27,6 +30,7 @@ class ColumnValueMapper implements MessageMapper
         $this->csvReader = $csvReader;
         $this->column = $config->getColumn();
         $this->propertiesColumn = $config->getPropertiesColumn();
+        $this->partitionKeyColumn = $config->getPartitionKeyColumn();
         $this->header = (array) $csvReader->getHeader();
 
         // Get column index
@@ -34,6 +38,10 @@ class ColumnValueMapper implements MessageMapper
 
         if ($this->propertiesColumn) {
             $this->propertiesColumnIndex = $this->getColumnIndex($this->propertiesColumn, $config);
+        }
+        
+        if ($this->partitionKeyColumn) {
+            $this->partitionKeyColumnIndex = $this->getColumnIndex($this->partitionKeyColumn, $config);
         }
 
         // Skip header
@@ -63,6 +71,14 @@ class ColumnValueMapper implements MessageMapper
                         'Error decoding JSON in properties column "%s".',
                         $this->propertiesColumn,
                     ));
+                }
+            }
+            
+            // Add partition key if the column is specified
+            if ($this->partitionKeyColumnIndex !== null) {
+                $partitionKey = $row[$this->partitionKeyColumnIndex] ?? null;
+                if ($partitionKey !== null && $partitionKey !== '') {
+                    $message['partitionKey'] = $partitionKey;
                 }
             }
 

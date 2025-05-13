@@ -113,6 +113,11 @@ class Writer {
       }
     }
     eventData.contentType = 'application/json'
+    
+    // Add partition key if specified
+    if (message.partitionKey) {
+      eventData.partitionKey = message.partitionKey;
+    }
 
     return eventData;
   }

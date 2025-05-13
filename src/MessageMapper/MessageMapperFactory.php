@@ -28,7 +28,7 @@ class MessageMapperFactory
 
         switch ($this->config->getMode()) {
             case ConfigDefinition::MODE_MESSAGE_ROW_AS_JSON:
-                return new RowAsJsonMapper($csvReader);
+                return new RowAsJsonMapper($csvReader, $this->config->getPartitionKeyColumn());
             case ConfigDefinition::MODE_MESSAGE_COLUMN_VALUE:
                 return new ColumnValueMapper($this->config, $csvReader);
             default:

@@ -63,6 +63,7 @@ class ConfigDefinition extends BaseConfigDefinition
                 ->end()
                 ->scalarNode('column')->end()
                 ->scalarNode('propertiesColumn')->end()
+                ->scalarNode('partitionKeyColumn')->end()
             ->end()
         ;
 

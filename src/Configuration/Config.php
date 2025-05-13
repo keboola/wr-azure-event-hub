@@ -87,4 +87,15 @@ class Config extends BaseConfig
 
         return $this->getStringValue(['parameters', 'propertiesColumn']);
     }
+    
+    public function getPartitionKeyColumn(): ?string
+    {
+        /** @var array $configData */
+        $configData = $this->getData();
+        if (!isset($configData['parameters']['partitionKeyColumn'])) {
+            return null;
+        }
+
+        return $this->getStringValue(['parameters', 'partitionKeyColumn']);
+    }
 }
