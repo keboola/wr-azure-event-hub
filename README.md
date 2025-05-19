@@ -22,7 +22,7 @@ The configuration `config.json` contains following properties in `parameters` ke
     - `column_value` - Message is value of the defined `column`, eg. `John`.
 - `column` - string (optional): Name of the column for `mode` = `column_value`.
 - `propertiesColumns` - string (optional): Name of the column with properties (correlationId, messageId, ...) in JSON format for `mode` = `column_value`.
-- `partitionKey` - string (optional): Name of the column for partition key. If not set, the partition key is not used. Messages with the same partition key will be batched together.
+- `partitionKeyColumn` - string (optional): Name of the column for partition key. If not set, the partition key is not used. Messages with the same partition key will be batched together.
 
 
 ## Development
