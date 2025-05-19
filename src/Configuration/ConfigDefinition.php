@@ -63,6 +63,7 @@ class ConfigDefinition extends BaseConfigDefinition
                 ->end()
                 ->scalarNode('column')->end()
                 ->scalarNode('propertiesColumn')->end()
+                ->scalarNode('partitionKeyColumn')->end()
             ->end()
         ;
 
@@ -79,6 +80,12 @@ class ConfigDefinition extends BaseConfigDefinition
                     if (!empty($v['propertiesColumn'])) {
                         throw new InvalidConfigurationException(sprintf(
                             'Invalid configuration, "propertiesColumn" is configured, but "mode" is set to "%s".',
+                            self::MODE_MESSAGE_ROW_AS_JSON,
+                        ));
+                    }
+                    if (!empty($v['partitionKeyColumn'])) {
+                        throw new InvalidConfigurationException(sprintf(
+                            'Invalid configuration, "partitionKeyColumn" is configured, but "mode" is set to "%s".',
                             self::MODE_MESSAGE_ROW_AS_JSON,
                         ));
                     }
