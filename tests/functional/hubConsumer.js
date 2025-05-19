@@ -29,7 +29,7 @@ async function main() {
             message += `, properties: ${JSON.stringify(event.properties)}`;
           }
           if (event.partitionKey) {
-            message += `, partitionKey: ${JSON.stringify(event.properties)}`;
+            message += `, partitionKey: ${JSON.stringify(event.partitionKey)}`;
           }
           console.log(message);
           messageCount++;

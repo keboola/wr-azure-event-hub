@@ -1,5 +1,5 @@
-Message 001, content: {"foo1":"bar1"}, correlationId: 1, messageId: 1, properties: {"otherProperty":"something"}, partitionKey: {"otherProperty":"something"}
-Message 002, content: {"foo2":"bar2"}, correlationId: 2, messageId: 2, properties: {"otherProperty":"something2"}, partitionKey: {"otherProperty":"something2"}
-Message 003, content: {"foo3":"bar3"}, correlationId: 3, messageId: 3, properties: {"otherProperty":"something3"}, partitionKey: {"otherProperty":"something3"}
-Message 004, content: {"foo4":"bar4"}, correlationId: text, properties: {"otherProperty":"something2"}
-Message 005, content: {"foo5":"bar5"}, properties: {"otherProperty":"something5"}
+Message 001, content: {"foo1":"bar1"}, correlationId: 1, messageId: 1, properties: {"otherProperty":"something"}, partitionKey: "partition-1"
+Message 002, content: {"foo2":"bar2"}, correlationId: 2, messageId: 2, properties: {"otherProperty":"something2"}, partitionKey: "partition-1"
+Message 003, content: {"foo3":"bar3"}, correlationId: 3, messageId: 3, properties: {"otherProperty":"something3"}, partitionKey: "partition-2"
+Message 004, content: {"foo4":"bar4"}, correlationId: text, properties: {"otherProperty":"something2"}, partitionKey: "partition-2"
+Message 005, content: {"foo5":"bar5"}, properties: {"otherProperty":"something5"}, partitionKey: "partition-3"
