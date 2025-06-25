@@ -156,13 +156,13 @@ class Writer {
         eventData.messageId = message.properties.messageId;
         delete message.properties.messageId;
       }
-      if (message.partitionKey) {
-        eventData.partitionKey = message.partitionKey;
-        delete message.partitionKey;
-      }
       if (Object.keys(message.properties).length > 0) {
         eventData.properties = message.properties;
       }
+    }
+    if (message.partitionKey) {
+      eventData.partitionKey = message.partitionKey;
+      delete message.partitionKey;
     }
     eventData.contentType = 'application/json'
 
