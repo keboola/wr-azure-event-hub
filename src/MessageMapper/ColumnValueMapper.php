@@ -20,6 +20,10 @@ class ColumnValueMapper implements MessageMapper
     private ?string $propertiesColumn;
     private ?int $propertiesColumnIndex = null;
 
+    private ?string $partitionKeyColumn = null;
+
+    private ?int $partitionKeyColumnIndex = null;
+
     private array $header;
 
     public function __construct(Config $config, CsvReader $csvReader)
@@ -27,6 +31,7 @@ class ColumnValueMapper implements MessageMapper
         $this->csvReader = $csvReader;
         $this->column = $config->getColumn();
         $this->propertiesColumn = $config->getPropertiesColumn();
+        $this->partitionKeyColumn = $config->getPartitionKeyColumn();
         $this->header = (array) $csvReader->getHeader();
 
         // Get column index
@@ -34,6 +39,10 @@ class ColumnValueMapper implements MessageMapper
 
         if ($this->propertiesColumn) {
             $this->propertiesColumnIndex = $this->getColumnIndex($this->propertiesColumn, $config);
+        }
+
+        if ($this->partitionKeyColumn) {
+            $this->partitionKeyColumnIndex = $this->getColumnIndex($this->partitionKeyColumn, $config);
         }
 
         // Skip header
@@ -64,6 +73,10 @@ class ColumnValueMapper implements MessageMapper
                         $this->propertiesColumn,
                     ));
                 }
+            }
+
+            if ($this->partitionKeyColumn !== null) {
+                $message['partitionKey'] = $row[$this->partitionKeyColumnIndex] ?? null;
             }
 
             yield $message;

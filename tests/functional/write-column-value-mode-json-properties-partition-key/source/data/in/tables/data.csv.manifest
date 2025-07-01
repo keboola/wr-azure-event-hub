@@ -1,0 +1,8 @@
+{
+    "id": "in.c-test.data",
+    "columns": [
+        "properties",
+        "json",
+        "partitionKey"
+    ]
+}

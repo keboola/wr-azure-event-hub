@@ -28,6 +28,9 @@ async function main() {
           if (event.properties) {
             message += `, properties: ${JSON.stringify(event.properties)}`;
           }
+          if (event.partitionKey) {
+            message += `, partitionKey: ${JSON.stringify(event.partitionKey)}`;
+          }
           console.log(message);
           messageCount++;
         }

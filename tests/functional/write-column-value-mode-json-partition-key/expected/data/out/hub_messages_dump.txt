@@ -1,0 +1,5 @@
+Message 001, content: {"foo1":"bar1"}, partitionKey: "partition-1"
+Message 002, content: {"foo2":"bar2"}, partitionKey: "partition-1"
+Message 003, content: {"foo3":"bar3"}, partitionKey: "partition-2"
+Message 004, content: {"foo4":"bar4"}, partitionKey: "partition-2"
+Message 005, content: {"foo5":"bar5"}, partitionKey: "partition-3"
