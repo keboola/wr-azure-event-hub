@@ -1,8 +1,0 @@
-{
-    "id": "in.c-test.data",
-    "columns": [
-        "id",
-        "name",
-        "age"
-    ]
-}
