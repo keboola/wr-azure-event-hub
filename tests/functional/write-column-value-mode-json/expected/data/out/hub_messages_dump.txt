@@ -1,0 +1,3 @@
+Message 001, content: {"foo1":"bar1"}
+Message 002, content: {"foo2":"bar2"}
+Message 003, content: {"data":"scalar"}

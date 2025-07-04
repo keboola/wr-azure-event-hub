@@ -1,0 +1,21 @@
+{
+  "storage": {
+    "input": {
+      "tables": [
+        {
+          "source": "in.c-test.data",
+          "destination": "data.csv"
+        }
+      ]
+    }
+  },
+  "parameters": {
+    "hub": {
+      "#connectionString": "%env(string:CONNECTION_STRING_NORMALIZED)%",
+      "eventHubName": "%env(string:EVENT_HUB_NAME)%"
+    },
+    "tableId": "in.c-test.data",
+    "mode": "column_value",
+    "column": "json"
+  }
+}

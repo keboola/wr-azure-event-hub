@@ -1,0 +1,4 @@
+Message 001, content: {"data":"Just a text"}, correlationId: 1, messageId: 1, properties: {"otherProperty":"something"}
+Message 002, content: {"data":"Not in a JSON format"}, correlationId: 2, messageId: 2, properties: {"otherProperty":"something2"}
+Message 003, content: {"data":"Plain vanilla text"}, correlationId: 3, messageId: 2, properties: {"otherProperty":"something2"}
+Message 004, content: {"data":"Will be prefixed with data"}, properties: {"otherProperty":"something2"}
