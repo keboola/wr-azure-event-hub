@@ -53,16 +53,18 @@ class Writer {
   async writeMessages() {
     const messages = this.getMessages();
     
-    let loadNext = true;
     let message = null;
+    let shouldLoadNext = true;
     
     while (true) {
       // Load next message or retry with current message
-      message = loadNext ? (await messages.next()).value : message;
-      if (!message) {
-        // No more messages, send all remaining batches
-        await this.sendAllActiveBatches();
-        break;
+      if (shouldLoadNext) {
+        message = (await messages.next()).value;
+        if (!message) {
+          // No more messages, send all remaining batches
+          await this.sendAllActiveBatches();
+          break;
+        }
       }
 
       const eventData = this.messageToEventData(message);
@@ -80,10 +82,10 @@ class Writer {
       if (isAdded) {
         // Message added successfully
         this.messagesQueuedCount += 1;
-        loadNext = true;
+        shouldLoadNext = true;
       } else {
         // Message was not added => batch was full => try again with new batch
-        loadNext = false;
+        shouldLoadNext = false;
       }
 
       // Send batch if:
