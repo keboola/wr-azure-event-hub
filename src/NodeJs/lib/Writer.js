@@ -52,10 +52,10 @@ class Writer {
 
   async writeMessages() {
     const messages = this.getMessages();
-    
-    let message = null;
+
     let shouldLoadNext = true;
-    
+    let message = null;
+
     while (true) {
       // Load next message or retry with current message
       if (shouldLoadNext) {
@@ -91,13 +91,39 @@ class Writer {
       // Send batch if:
       // 1. Message was added and batch is full (by count), OR
       // 2. Message was not added and batch is not empty (full by size)
+      let batchTotalSize = this.getTotalActiveBatchesSize();
+      console.log(`Active batches "${this.activeBatches.size}"`);
+      console.log(`Current total batch size "${batchTotalSize}"`);
       if (
-        (isAdded && batch.count >= this.batchSize)
+        (isAdded && batchTotalSize >= this.batchSize)
         || (!isAdded && batch.count > 0)
       ) {
-        await this.sendBatchAndCreateNew(partitionKey);
+        // Send the largest batch and create a new one for the same partition key
+        await this.sendBatchAndCreateNew(this.getLargestBatch().partitionKey);
       }
     }
+  }
+
+  getTotalActiveBatchesSize() {
+    let totalSize = 0;
+    for (const batch of this.activeBatches.values()) {
+      totalSize += batch.count;
+    }
+    return totalSize;
+  }
+
+  getLargestBatch() {
+    let largestBatch = null;
+    let largestSize = 0;
+
+    for (const [partitionKey, batch] of this.activeBatches.entries()) {
+      if (batch.count > largestSize) {
+        largestSize = batch.count;
+        largestBatch = {partitionKey, batch};
+      }
+    }
+
+    return largestBatch;
   }
 
   async getOrCreateBatch(partitionKey) {
