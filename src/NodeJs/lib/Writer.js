@@ -92,8 +92,6 @@ class Writer {
       // 1. Message was added and batch is full (by count), OR
       // 2. Message was not added and batch is not empty (full by size)
       let batchTotalSize = this.getTotalActiveBatchesSize();
-      console.log(`Active batches "${this.activeBatches.size}"`);
-      console.log(`Current total batch size "${batchTotalSize}"`);
       if (
         (isAdded && batchTotalSize >= this.batchSize)
         || (!isAdded && batch.count > 0)
