@@ -99,6 +99,12 @@ class Writer {
         // Send the largest batch and create a new one for the same partition key
         await this.sendBatchAndCreateNew(this.getLargestBatch().partitionKey);
       }
+
+      // Protection against too many 1 entry batches
+      if (this.activeBatches.size > this.batchSize) {
+        // send all active batches
+        await this.sendAllActiveBatches(true);
+      }
     }
   }
 
@@ -147,12 +153,19 @@ class Writer {
     await this.createBatchForPartition(partitionKey);
   }
 
-  async sendAllActiveBatches() {
+  async sendAllActiveBatches(recreateBatches = false) {
     const sendPromises = [];
+    const createPromises = [];
     for (const partitionKey of this.activeBatches.keys()) {
       sendPromises.push(this.sendBatch(partitionKey, true));
+      if (recreateBatches) {
+        createPromises.push(this.createBatchForPartition(partitionKey));
+      }
     }
     await Promise.all(sendPromises);
+    if (recreateBatches) {
+      await Promise.all(createPromises);
+    }
   }
 
   async sendBatch(partitionKey, wait = false) {
