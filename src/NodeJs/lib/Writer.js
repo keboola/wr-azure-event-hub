@@ -26,12 +26,12 @@ class Writer {
     this.producer = null;
     this.batchSize = parseInt(process.env.BATCH_SIZE, 10);
 
-    // Partitioning support - Map of partition key to message queue
-    this.messagesByPartition = new Map();
+    // Active batches by partition key - only keep current batches in memory
+    this.activeBatches = new Map();
+    this.batchSendPromises = new Map();
 
     // Stats
     this.messagesQueuedCount = 0;
-    this.messagesSendingCount = 0;
     this.messagesSentCount = 0;
     this.batchesSentCount = 0;
   }
@@ -51,96 +51,118 @@ class Writer {
   }
 
   async writeMessages() {
-    // Read all messages and group them by partition key
-    await this.readAndGroupMessages();
-
-    // Send messages in batches for each partition key
-    await this.sendPartitionedBatches();
-  }
-
-  async readAndGroupMessages() {
     const messages = this.getMessages();
+    
     let message = null;
-
-    // Read all messages and group by partition key
+    let shouldLoadNext = true;
+    
     while (true) {
-      message = (await messages.next()).value;
-      if (!message) {
-        break; // No more messages, done reading
+      // Load next message or retry with current message
+      if (shouldLoadNext) {
+        message = (await messages.next()).value;
+        if (!message) {
+          // No more messages, send all remaining batches
+          await this.sendAllActiveBatches();
+          break;
+        }
       }
 
       const eventData = this.messageToEventData(message);
-      // Use null for messages without a partition key to let Azure assign a partition
       const partitionKey = eventData.partitionKey || null;
 
-      // Initialize array for this partition if needed
-      if (!this.messagesByPartition.has(partitionKey)) {
-        this.messagesByPartition.set(partitionKey, []);
+      // Get or create batch for this partition key
+      let batch = await this.getOrCreateBatch(partitionKey);
+      const isAdded = batch.tryAdd(eventData);
+
+      // Message was not added + batch is empty => message is too large
+      if (!isAdded && batch.count === 0) {
+        throw new UserError(`Message number="${this.messagesQueuedCount + 1}" is too large.`);
       }
 
-      // Add message to its partition group
-      this.messagesByPartition.get(partitionKey).push(eventData);
-      this.messagesQueuedCount++;
+      if (isAdded) {
+        // Message added successfully
+        this.messagesQueuedCount += 1;
+        shouldLoadNext = true;
+      } else {
+        // Message was not added => batch was full => try again with new batch
+        shouldLoadNext = false;
+      }
+
+      // Send batch if:
+      // 1. Message was added and batch is full (by count), OR
+      // 2. Message was not added and batch is not empty (full by size)
+      if (
+        (isAdded && batch.count >= this.batchSize)
+        || (!isAdded && batch.count > 0)
+      ) {
+        await this.sendBatchAndCreateNew(partitionKey);
+      }
     }
   }
 
-  async sendPartitionedBatches() {
-    // Process each partition's messages
-    for (const [partitionKey, messages] of this.messagesByPartition.entries()) {
-      await this.sendBatchesForPartition(partitionKey, messages);
+  async getOrCreateBatch(partitionKey) {
+    if (!this.activeBatches.has(partitionKey)) {
+      await this.createBatchForPartition(partitionKey);
     }
+    return this.activeBatches.get(partitionKey);
   }
 
-  async sendBatchesForPartition(partitionKey, messages) {
+  async createBatchForPartition(partitionKey) {
     const batchOptions = {};
-
-    // Only set partitionKey option if it's not null
     if (partitionKey !== null) {
       batchOptions.partitionKey = partitionKey;
     }
 
-    // Create first batch for this partition
-    let batch = await this.producer.createBatch(batchOptions);
-    let messageIndex = 0;
+    const batch = await this.producer.createBatch(batchOptions);
+    this.activeBatches.set(partitionKey, batch);
+    return batch;
+  }
 
-    // Process all messages for this partition
-    while (messageIndex < messages.length) {
-      const message = messages[messageIndex];
-      const isAdded = batch.tryAdd(message);
+  async sendBatchAndCreateNew(partitionKey) {
+    await this.sendBatch(partitionKey, true); // Wait for the batch to be sent
+    await this.createBatchForPartition(partitionKey);
+  }
 
-      if (isAdded) {
-        // Message added successfully, move to next message
-        messageIndex++;
+  async sendAllActiveBatches() {
+    const sendPromises = [];
+    for (const partitionKey of this.activeBatches.keys()) {
+      sendPromises.push(this.sendBatch(partitionKey, true));
+    }
+    await Promise.all(sendPromises);
+  }
 
-        // If batch is full by count, send it and create a new one
-        if (batch.count === this.batchSize) {
-          await this.sendBatch(batch);
-          batch = await this.producer.createBatch(batchOptions);
-        }
-      } else {
-        // Couldn't add message to batch
-
-        // If batch is empty, message is too large
-        if (batch.count === 0) {
-          throw new UserError(`Message number="${this.messagesSentCount + messageIndex + 1}" is too large.`);
-        }
-
-        // Batch is full by size, send it and create a new one
-        await this.sendBatch(batch);
-        batch = await this.producer.createBatch(batchOptions);
-      }
+  async sendBatch(partitionKey, wait = false) {
+    // Wait for any previous send operation for this partition
+    const previousPromise = this.batchSendPromises.get(partitionKey);
+    if (previousPromise) {
+      await previousPromise;
     }
 
-    // Send final batch if it has any messages
-    if (batch.count > 0) {
-      await this.sendBatch(batch);
+    // Start sending current batch
+    const sendPromise = this.doSendBatch(partitionKey);
+    this.batchSendPromises.set(partitionKey, sendPromise);
+
+    if (wait) {
+      await sendPromise;
     }
   }
 
-  async sendBatch(batch) {
+  async doSendBatch(partitionKey) {
+    const batch = this.activeBatches.get(partitionKey);
+
+    if (!batch || batch.count === 0) {
+      return; // No batch or empty batch
+    }
+
+    const batchMessageCount = batch.count;
+
     await this.producer.sendBatch(batch);
-    this.batchesSentCount++;
-    this.messagesSentCount += batch.count;
+    this.batchesSentCount += 1;
+    this.messagesSentCount += batchMessageCount;
+
+    // Remove the batch from active batches
+    this.activeBatches.delete(partitionKey);
+    this.batchSendPromises.delete(partitionKey);
   }
 
   messageToEventData(message) {
