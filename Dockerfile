@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_PROCESS_TIMEOUT 3600
 ENV NVM_DIR="$HOME/.nvm"
-ENV NODE_VERSION=18.20.4
+ENV NODE_VERSION=24.0.0
 
 WORKDIR /code/
 
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install nvm and Node
 RUN mkdir -p $NVM_DIR
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash \
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash \
     && . "$NVM_DIR/nvm.sh" \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
