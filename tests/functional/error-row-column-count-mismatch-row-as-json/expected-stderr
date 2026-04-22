@@ -1,0 +1,1 @@
+Row #2 has 2 columns, but header has 3 columns. This usually happens when a field contains an unescaped newline or CR character that breaks CSV parsing. Strip "\n"/"\r" from multi-line text columns before writing.
