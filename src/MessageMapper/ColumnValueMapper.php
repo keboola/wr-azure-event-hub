@@ -56,18 +56,7 @@ class ColumnValueMapper implements MessageMapper
         while ($this->csvReader->valid()) {
             $rowNumber++;
             $row = (array) $this->csvReader->current();
-
-            if (count($row) !== $expectedColumnCount) {
-                throw new UserException(sprintf(
-                    'Row #%d has %d columns, but header has %d columns. '
-                    . 'This usually happens when a field contains an unescaped newline '
-                    . 'or CR character that breaks CSV parsing. '
-                    . 'Strip "\n"/"\r" from multi-line text columns before writing.',
-                    $rowNumber,
-                    count($row),
-                    $expectedColumnCount,
-                ));
-            }
+            RowColumnCountValidator::assertMatchesHeader($rowNumber, count($row), $expectedColumnCount);
 
             $rawMessage = $row[$this->columnIndex];
 
