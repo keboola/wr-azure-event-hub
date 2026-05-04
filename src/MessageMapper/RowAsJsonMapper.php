@@ -31,8 +31,14 @@ class RowAsJsonMapper implements MessageMapper
 
     public function getMessages(): Iterator
     {
+        $rowNumber = 0;
+        $expectedColumnCount = count($this->header);
         while ($this->csvReader->valid()) {
-            yield  ['message' => array_combine($this->header, (array) $this->csvReader->current())];
+            $rowNumber++;
+            $row = (array) $this->csvReader->current();
+            RowColumnCountValidator::assertMatchesHeader($rowNumber, count($row), $expectedColumnCount);
+
+            yield ['message' => array_combine($this->header, $row)];
             $this->csvReader->next();
         }
     }

@@ -51,8 +51,13 @@ class ColumnValueMapper implements MessageMapper
 
     public function getMessages(): Iterator
     {
+        $rowNumber = 0;
+        $expectedColumnCount = count($this->header);
         while ($this->csvReader->valid()) {
+            $rowNumber++;
             $row = (array) $this->csvReader->current();
+            RowColumnCountValidator::assertMatchesHeader($rowNumber, count($row), $expectedColumnCount);
+
             $rawMessage = $row[$this->columnIndex];
 
             // Try convert to JSON object
