@@ -23,7 +23,7 @@ function describeActiveResources() {
   });
 
   if (counts.size === 0) {
-    return 'nothing';
+    return 'none';
   }
 
   return Array.from(counts.entries())

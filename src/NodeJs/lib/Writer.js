@@ -60,19 +60,23 @@ class Writer {
    * treated as successful. Failing here would report an already delivered write as an error and
    * invite a re-run, which would send every message to the event hub a second time.
    */
-  async closeProducer() {
+  async closeProducer(timeoutMs = CLOSE_TIMEOUT_MS) {
     let timer = null;
     const timeout = new Promise((resolve) => {
-      timer = setTimeout(() => resolve(false), CLOSE_TIMEOUT_MS);
+      timer = setTimeout(() => resolve(false), timeoutMs);
     });
 
     try {
       const closed = await Promise.race([this.producer.close().then(() => true), timeout]);
       if (!closed) {
+        // Stop our own progress timer before looking at what is still open, otherwise it shows up
+        // in the report as a handle of its own and hides which handles we did not create. Waiting
+        // until now means the progress lines keep coming for as long as the close is given.
+        this.stopProgressTimer();
         console.error(
           `Warning: All messages were sent, but closing the connection to the event hub `
-          + `"${this.eventHubName}" did not finish in ${CLOSE_TIMEOUT_MS / 1000} seconds. `
-          + `Continuing, the process is kept alive by: ${describeActiveResources()}.`
+          + `"${this.eventHubName}" did not finish in ${timeoutMs / 1000} seconds. `
+          + `Continuing anyway, open handles: ${describeActiveResources()}.`
         );
       }
     } finally {
