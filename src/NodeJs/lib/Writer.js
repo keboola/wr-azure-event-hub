@@ -7,8 +7,10 @@ const binarySplit = require('binary-split');
 const UserError = require('./UserError.js');
 const ApplicationError = require('./ApplicationError.js');
 const messageStream = require('./messageStream');
+const {describeActiveResources} = require('./processExit.js');
 
 const PROGRESS_OUTPUT_INTERVAL_MS = 30 * 1000; // log progress each 30 seconds
+const CLOSE_TIMEOUT_MS = 60 * 1000; // give up waiting for the connection to close after 60 seconds
 
 class Writer {
   constructor() {
@@ -45,9 +47,37 @@ class Writer {
     this.startProgressTimer();
     this.producer = await this.createProducerClient();
     await this.writeMessages();
-    await this.producer.close();
+    await this.closeProducer();
     this.stopProgressTimer();
     this.logFinalState();
+  }
+
+  /**
+   * Close the producer, but do not wait for it indefinitely.
+   *
+   * All messages have already been delivered at this point - each batch is confirmed by
+   * sendBatch() - so a close that does not finish in time is reported and the write is still
+   * treated as successful. Failing here would report an already delivered write as an error and
+   * invite a re-run, which would send every message to the event hub a second time.
+   */
+  async closeProducer() {
+    let timer = null;
+    const timeout = new Promise((resolve) => {
+      timer = setTimeout(() => resolve(false), CLOSE_TIMEOUT_MS);
+    });
+
+    try {
+      const closed = await Promise.race([this.producer.close().then(() => true), timeout]);
+      if (!closed) {
+        console.error(
+          `Warning: All messages were sent, but closing the connection to the event hub `
+          + `"${this.eventHubName}" did not finish in ${CLOSE_TIMEOUT_MS / 1000} seconds. `
+          + `Continuing, the process is kept alive by: ${describeActiveResources()}.`
+        );
+      }
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async writeMessages() {
