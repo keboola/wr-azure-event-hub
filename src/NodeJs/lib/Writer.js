@@ -7,6 +7,7 @@ const binarySplit = require('binary-split');
 const UserError = require('./UserError.js');
 const ApplicationError = require('./ApplicationError.js');
 const messageStream = require('./messageStream');
+const {reportOpenResourcesIfStuck, enableAzureDiagnostics} = require('./diagnostics');
 
 const PROGRESS_OUTPUT_INTERVAL_MS = 30 * 1000; // log progress each 30 seconds
 
@@ -42,12 +43,16 @@ class Writer {
   }
 
   async write() {
+    enableAzureDiagnostics();
     this.startProgressTimer();
     this.producer = await this.createProducerClient();
     await this.writeMessages();
-    await this.producer.close();
     this.stopProgressTimer();
     this.logFinalState();
+    reportOpenResourcesIfStuck();
+    console.log(`Closing connection to the event hub "${this.eventHubName}" ...`);
+    await this.producer.close();
+    console.log('Connection closed.');
   }
 
   async writeMessages() {

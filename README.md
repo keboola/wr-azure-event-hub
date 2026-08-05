@@ -25,6 +25,20 @@ The configuration `config.json` contains following properties in `parameters` ke
 - `partitionKeyColumn` - string (optional): Name of the column for partition key. If not set, the partition key is not used. Messages with the same partition key will be batched together.
 
 
+## Troubleshooting
+
+The job log follows the write in phases: `Connecting to the event hub ...`, `Progress: Sent ...`,
+`Done: Sent ...`, `Closing connection to the event hub ...`, `Connection closed.` and finally
+`Exported all N rows ...`. The last logged phase says where a stuck job hangs.
+
+If all messages were sent but the process does not finish, a warning listing the resources that keep it
+alive is logged every 60 seconds. If the job is killed (eg. by the job timeout), the number of rows
+already passed to the writer is logged as well.
+
+For details of the AMQP communication, set the `AZURE_DIAGNOSTICS=1` environment variable.
+It enables the connection lifecycle logs of the Azure SDK. Frame level and authentication namespaces
+are not enabled and all output is redacted, so credentials are not exposed.
+
 ## Development
  
 Clone this repository and init the workspace with following command:

@@ -98,6 +98,9 @@ class Writer
                 }
             });
 
+        // On termination (eg. job timeout), log how many rows were already passed to the writer
+        $this->logProgressOnTermination($messageWriter);
+
         // Schedule the first batch
         $this->futureWriteCsvRows($mapper->getMessages(), $messageWriter);
 
@@ -110,6 +113,23 @@ class Writer
             $messageWriter->getCount(),
             $this->config->getTableId(),
         ));
+    }
+
+    /**
+     * The final summary is logged after the event loop ends, so it is missing if the process is killed.
+     * Signal handlers make the state visible even then, the process is terminated right after.
+     */
+    protected function logProgressOnTermination(MessageWriter $messageWriter): void
+    {
+        foreach ([SIGTERM, SIGINT] as $signal) {
+            $this->loop->addSignal($signal, function () use ($messageWriter): void {
+                $this->logger->warning(sprintf(
+                    'Terminated: %d rows from the table "%s" were passed to the writer.',
+                    $messageWriter->getCount(),
+                    $this->config->getTableId(),
+                ));
+            });
+        }
     }
 
     protected function writeCsvRows(Iterator $messages, MessageWriter $messageWriter): void
@@ -156,6 +176,8 @@ class Writer
             'CONNECTION_STRING' => $this->config->getConnectionString(),
             'EVENT_HUB_NAME' => $this->config->getEventHubName(),
             'BATCH_SIZE' => $this->config->getAction() === 'run' ? $this->config->getBatchSize() : null,
+            // The NodeJs process gets an explicit environment, diagnostics must be passed through
+            'AZURE_DIAGNOSTICS' => getenv('AZURE_DIAGNOSTICS') ?: null,
         ];
     }
 }
